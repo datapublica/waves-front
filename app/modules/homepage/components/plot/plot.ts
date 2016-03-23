@@ -34,6 +34,7 @@ export class PlotDirective implements ng.IDirective {
             const containerDimensions = graphElement.getBoundingClientRect();
 
             var marginRight = 60;
+            var marginTop = 20;
             var width = containerDimensions.width-marginRight,
                 height = 150;
 
@@ -41,7 +42,7 @@ export class PlotDirective implements ng.IDirective {
                 .attr("width", width)
                 .attr("height", height)
                 .append("g")
-                .attr("transform", "translate(" + marginRight + "," + 0 + ")");
+                .attr("transform", "translate(" + marginRight + "," + marginTop + ")");
 
             if(sector1 === sector2){
                 svg.append('text')
