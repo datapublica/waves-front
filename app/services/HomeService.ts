@@ -10,8 +10,6 @@ export class HomeService {
     }
 
     public getData() : any {
-        return {
-            message: "Hello World !"
-        }
+        return this.http.get('/api/123');
     }
 }

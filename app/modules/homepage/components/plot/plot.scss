@@ -1,0 +1,10 @@
+plot{
+  svg{
+    overflow: visible;
+    .axis{
+      text:not(.label){
+        display: none;
+      }
+    }
+  }
+}

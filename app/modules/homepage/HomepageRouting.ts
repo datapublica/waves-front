@@ -1,3 +1,4 @@
+import {HomeService} from "../../services/HomeService";
 /**
  * ui-router homepage state
  * @param $stateProvider
@@ -13,7 +14,12 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
             "@": {
                 template: <string>require('./homepage.html'),
                 controller: 'HomepageController',
-                controllerAs: 'Home'
+                controllerAs: 'Home',
+                resolve: {
+                    data: (HomeService) => {
+                        return HomeService.getData();
+                    }
+                }
             }
         }
     });
