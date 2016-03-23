@@ -23,6 +23,8 @@ import './modules/homepage/index';
 import './services';
 import './components';
 
+import './assets/data/data.json';
+
 /**
  * The main app module.
  */

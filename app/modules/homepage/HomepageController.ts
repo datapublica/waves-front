@@ -9,11 +9,12 @@ export class HomepageController {
     public data: any;
     public sectors: string[] = [];
 
-    constructor(data){
+    constructor(HomeService: HomeService, data){
         "ngInject";
         this.data = data;
         let firstEntry = this.data.data[0]['@graph'];
-        for(let i = 0; i < 8; i++){
+        const NB_SECTORS = 10;
+        for(let i = 0; i < NB_SECTORS; i++){
             //this.sectors.push(firstEntry[i]['waves:relatedSector']['@id'].replace(/waves:/, ''));
             if(firstEntry[i]['waves:relatedSector']) {
                 this.sectors.push(firstEntry[i]['waves:relatedSector']['@id']);
@@ -25,7 +26,7 @@ export class HomepageController {
                     let timestamp = entry['@graph'].filter((input) => {
                         return input['@type'] === "waves:Event";
                     })[0]['waves:time']['@value'];
-                    var combinedName = sector1+'&&&'+sector2;
+                    var combinedName = HomeService.getSectorLabel(sector1)+'_'+HomeService.getSectorLabel(sector2);
                     if(angular.isUndefined(this.chartData[combinedName])){
                         this.chartData[combinedName] = [];
                     }

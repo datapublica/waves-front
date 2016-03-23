@@ -1,6 +1,6 @@
 <div class="homepage" data-layout="column" data-layout-padding>
     <div layout="row" data-layout-align="space-around" data-layout-padding data-layout-wrap>
-        <div ng-repeat="(chartName,chartData) in Home.chartData">
+        <div ng-repeat="(chartName,chartData) in Home.chartData" flex="10">
             <plot chart-name="chartName" chart-data="chartData"></plot>
         </div>
     </div>

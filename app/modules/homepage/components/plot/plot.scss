@@ -1,10 +1,22 @@
 plot{
+  display: block;
+  margin-bottom: 30px;
   svg{
     overflow: visible;
     .axis{
-      text:not(.label){
-        display: none;
+      path{
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
       }
+      text{
+        fill: grey;
+        font-size:small;
+      }
+    }
+    text.sector-name{
+      font-weight: bold;
+      fill: #e53935;
     }
   }
 }
