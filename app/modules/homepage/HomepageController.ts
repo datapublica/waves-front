@@ -5,17 +5,19 @@ import {HomeService} from "../../services/HomeService";
  */
 export class HomepageController {
     public helloWorld: string;
+    private HomeService: HomeService;
     public chartData: any = {};
     public data: any;
     public sectors: string[] = [];
+    public newEntry: any;
 
-    constructor(HomeService: HomeService, data){
+    constructor(HomeService: HomeService, $interval:ng.IIntervalService, data: any){
         "ngInject";
         this.data = data;
+        this.HomeService = HomeService;
         let firstEntry = this.data.data[0]['@graph'];
         const NB_SECTORS = 10;
         for(let i = 0; i < NB_SECTORS; i++){
-            //this.sectors.push(firstEntry[i]['waves:relatedSector']['@id'].replace(/waves:/, ''));
             if(firstEntry[i]['waves:relatedSector']) {
                 this.sectors.push(firstEntry[i]['waves:relatedSector']['@id']);
             }
@@ -38,10 +40,10 @@ export class HomepageController {
                         if(input['waves:relatedSector']) {
                             var sector = input['waves:relatedSector']['@id'];
 
-                            if (sector === sector1) {
+                            if (sector === sector2) {
                                 this.chartData[combinedName][index].x = input['qudt:numericValue']['@value']
                             }
-                            if (sector === sector2) {
+                            if (sector === sector1) {
                                 this.chartData[combinedName][index].y = input['qudt:numericValue']['@value']
                             }
                         }
@@ -49,6 +51,14 @@ export class HomepageController {
                 });
             });
         });
-        console.log(this.chartData);
+
+        //this.fetchNewData();
+        $interval(this.fetchNewData,4000);
+
+    }
+
+    fetchNewData = () => {
+        this.newEntry = this.HomeService.getNewEntry()['@graph'];
+        //console.log(this.newEntry);
     }
 }

@@ -5,6 +5,7 @@ import {directive} from "../../../../decorators/directive";
 import './plot.scss';
 //d3
 import 'd3';
+import {HomeService} from "../../../../services/HomeService";
 
 interface PlotComponentScope extends ng.IScope
 {
@@ -12,24 +13,32 @@ interface PlotComponentScope extends ng.IScope
     chartName: string
 }
 
-@directive()
+@directive('HomeService')
 export class PlotDirective implements ng.IDirective {
 
     public scope:any;
     public link:any;
     public template:string;
-    constructor() {
+
+    private x:any;
+    private y:any;
+    private xAxis:any;
+    private yAxis:any;
+    private xAxisElement:any;
+    private yAxisElement:any;
+    constructor(private HomeService: HomeService) {
         this.scope = {
             chartData: '<',
-            chartName: '<'
+            chartName: '<',
+            newEntry: '=',
         };
         this.template = '';
         this.link = (scope: PlotComponentScope, element: any[]) => {
             const sector1 = scope.chartName.split('_')[0];
             const sector2 = scope.chartName.split('_')[1];
-            const medianTimestamp = scope.chartData[Math.round(scope.chartData.length/2)].timestamp;
 
             const graphContainer = d3.select(element[0]);
+            const TRANSTION_DURATION = 500;
             let graphElement: any = graphContainer[0][0];
             const containerDimensions = graphElement.getBoundingClientRect();
 
@@ -44,6 +53,60 @@ export class PlotDirective implements ng.IDirective {
                 .append("g")
                 .attr("transform", "translate(" + marginRight + "," + marginTop + ")");
 
+            var refreshChart = () => {
+                const medianTimestamp = new Date(scope.chartData[Math.round(scope.chartData.length / 2)].timestamp);
+
+                scope.chartData.forEach(function (d:any) {
+                    d.x = +d.x;
+                    d.y = +d.y;
+                });
+                //console.log(angular.copy(scope.chartData));
+
+                this.x.domain(d3.extent(scope.chartData, function (d:any) {
+                    return d.x;
+                })).nice();
+                this.y.domain(d3.extent(scope.chartData, function (d:any) {
+                    return d.y;
+                })).nice();
+                console.log(this.x.domain());
+
+                this.xAxis.tickValues(this.x.domain());
+                this.yAxis.tickValues(this.y.domain());
+                svg.select(".x.axis").call(this.xAxis);
+                svg.select(".y.axis").call(this.yAxis);
+
+                let dots = svg.selectAll(".dot")
+                    .data(scope.chartData, (d:any) => d.timestamp);
+
+
+                dots.enter().append("circle")
+                    .attr("class", "dot")
+                    .attr("r", "0");
+
+                dots.attr("cx", (d:any) => {
+                        return this.x(d.x);
+                    })
+                    .attr("cy", (d:any) => {
+                        return this.y(d.y);
+                    });
+
+                //Update…
+                dots.transition()
+                    .duration(TRANSTION_DURATION)
+                    .attr("r", "2");
+
+
+                dots.style("fill", function (d:any) {
+                        return new Date(d.timestamp) < medianTimestamp ? '#e53935' : '#4CAF50'; // red : green
+                    });
+
+                dots.exit()
+                    .transition()
+                    .duration(TRANSTION_DURATION)
+                    .attr("r", "0")
+                    .remove();
+            };
+
             if(sector1 === sector2){
                 svg.append('text')
                     .attr('x',width/2)
@@ -52,58 +115,63 @@ export class PlotDirective implements ng.IDirective {
                     .attr('class','sector-name')
                     .text(sector1);
             } else {
-                var x = d3.scale.linear()
+                this.x = d3.scale.linear()
                     .range([0, width]);
 
-                var y = d3.scale.linear()
+                this.y = d3.scale.linear()
                     .range([height, 0]);
 
-                var xAxis = d3.svg.axis()
-                    .scale(x)
+                this.xAxis = d3.svg.axis()
+                    .scale(this.x)
                     .orient("bottom");
 
-                var yAxis = d3.svg.axis()
-                    .scale(y)
+                this.yAxis = d3.svg.axis()
+                    .scale(this.y)
                     .orient("left");
 
-                scope.chartData.forEach(function (d:any) {
-                    d.x = +d.x;
-                    d.y = +d.y;
-                });
-
-                x.domain(d3.extent(scope.chartData, function (d:any) {
-                    return d.x;
-                })).nice();
-                xAxis.tickValues(x.domain());
-                y.domain(d3.extent(scope.chartData, function (d:any) {
-                    return d.y;
-                })).nice();
-                yAxis.tickValues(y.domain());
-
-                svg.append("g")
+                this.xAxisElement = svg.append("g")
                     .attr("class", "x axis")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(xAxis);
+                    .attr("transform", "translate(0," + height + ")");
 
-                svg.append("g")
-                    .attr("class", "y axis")
-                    .call(yAxis);
+                this.yAxisElement = svg.append("g")
+                    .attr("class", "y axis");
 
-                svg.selectAll(".dot")
-                    .data(scope.chartData)
-                    .enter().append("circle")
-                    .attr("class", "dot")
-                    .attr("r", 2)
-                    .attr("cx", function (d:any) {
-                        return x(d.x);
-                    })
-                    .attr("cy", function (d:any) {
-                        return y(d.y);
-                    })
-                    .style("fill", function (d:any) {
-                        return d.timestamp < medianTimestamp ? '#e53935' : '#4CAF50'
-                    }); // red : green
+                refreshChart();
             }
+
+            scope.$watch('newEntry', (newEntry: any[]) => {
+
+                let ySector = scope.chartName.split('_')[0];
+                let xSector = scope.chartName.split('_')[1];
+                if(xSector === ySector || angular.isUndefined(newEntry)){
+                    return;
+                }
+                let newPoint = {
+                    timestamp: undefined,
+                    n:true,
+                    x: undefined,
+                    y: undefined
+                };
+                newPoint.timestamp = newEntry.filter((input) => {
+                    return input['@type'] === "waves:Event";
+                })[0]['waves:time']['@value'];
+                newEntry.forEach((input) => {
+                    if(input['waves:relatedSector']) {
+                        if (HomeService.getSectorLabel(input['waves:relatedSector']['@id']) === xSector) {
+                            newPoint.x = input['qudt:numericValue']['@value'];
+                        }
+                        if (HomeService.getSectorLabel(input['waves:relatedSector']['@id']) === ySector) {
+                            newPoint.y = input['qudt:numericValue']['@value'];
+                        }
+                    }
+                });
+                //console.log(angular.copy(scope.chartData));
+                scope.chartData.shift();
+                refreshChart();
+                scope.chartData.push(newPoint);
+                refreshChart();
+                //console.log(angular.copy(scope.chartData));
+            });
         }
     }
 }

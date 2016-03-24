@@ -43,4 +43,188 @@ export class HomeService {
         "waves:SECTEUR_14_-_Surpresse": "Surpressé",
         "waves:SECTEUR_01_-_Villeneuve": "Villeneuve"
     };
+
+    public getNewEntry():any {
+        let newEntry = {
+            "@graph": [
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Hubies_Haut"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Louveciennes"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Ville_Nouvelle"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Pierrier_Laval"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Guyancourt_Detendu"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Satory"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_05-06_-_Courbevoie_La_Defense"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Hubies_Detendu"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_02_-_Gennevilliers"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_03_-_Asnieres"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_08_-_Nanterre_Sud"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_09_-_Haut-Service"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_10_-_Buzenval_3eme_Elevation"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_11_-_Mt_Valerien_3eme_Elevation"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_12_-_Suresnes"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:SECTEUR_14_-_Surpresse"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Brezin"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Garches"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Gobert"
+                    }
+                },
+                {
+                    "qudt:numericValue": {
+                        "@type": "xsd:double",
+                    },
+                    "waves:relatedSector": {
+                        "@id": "waves:Haut-Clagny"
+                    }
+                },
+                {
+                    "@id": "S-3f:12v",
+                    "@type": "waves:Event",
+                    "waves:time": {
+                        "@type": "xsd:dateTime",
+                    }
+                }
+            ]
+        };
+
+        newEntry['@graph'].forEach((sector) => {
+            if(sector['qudt:numericValue']) {
+                sector['qudt:numericValue']['@value'] = Math.random() * 4000
+            }
+        });
+
+        newEntry['@graph'][newEntry['@graph'].length -1]['waves:time']["@value"] = new Date();
+
+        return newEntry;
+    }
 }
