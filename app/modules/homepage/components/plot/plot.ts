@@ -38,7 +38,7 @@ export class PlotDirective implements ng.IDirective {
             const sector2 = scope.chartName.split('_')[1];
 
             const graphContainer = d3.select(element[0]);
-            const TRANSTION_DURATION = 500;
+            const TRANSITION_DURATION = 1000;
             let graphElement: any = graphContainer[0][0];
             const containerDimensions = graphElement.getBoundingClientRect();
 
@@ -52,15 +52,22 @@ export class PlotDirective implements ng.IDirective {
                 .attr("height", height)
                 .append("g")
                 .attr("transform", "translate(" + marginRight + "," + marginTop + ")");
-
-            var refreshChart = () => {
+            var refreshChart = (firstLoad?) => {
                 const medianTimestamp = new Date(scope.chartData[Math.round(scope.chartData.length / 2)].timestamp);
 
                 scope.chartData.forEach(function (d:any) {
                     d.x = +d.x;
                     d.y = +d.y;
                 });
-                //console.log(angular.copy(scope.chartData));
+
+                var fill = function () {
+                    dots
+                        .transition()
+                        .duration(TRANSITION_DURATION)
+                        .style("fill", function (d:any) {
+                            return new Date(d.timestamp) < medianTimestamp ? '#e53935' : '#4CAF50'; // red : green
+                        });
+                };
 
                 this.x.domain(d3.extent(scope.chartData, function (d:any) {
                     return d.x;
@@ -68,7 +75,6 @@ export class PlotDirective implements ng.IDirective {
                 this.y.domain(d3.extent(scope.chartData, function (d:any) {
                     return d.y;
                 })).nice();
-                console.log(this.x.domain());
 
                 this.xAxis.tickValues(this.x.domain());
                 this.yAxis.tickValues(this.y.domain());
@@ -78,10 +84,29 @@ export class PlotDirective implements ng.IDirective {
                 let dots = svg.selectAll(".dot")
                     .data(scope.chartData, (d:any) => d.timestamp);
 
-
-                dots.enter().append("circle")
-                    .attr("class", "dot")
-                    .attr("r", "0");
+                    if(firstLoad){
+                        dots.enter().append("circle")
+                            .attr("class", "dot")
+                            .attr("r", "2")
+                            .style("fill", function (d:any) {
+                                return new Date(d.timestamp) < medianTimestamp ? '#e53935' : '#4CAF50'; // red : green
+                            });
+                    } else {
+                        dots.enter().append("circle")
+                            .attr("class", "dot")
+                            .attr("r", "0")
+                            .style("fill", 'grey')
+                            .transition()
+                            .duration(TRANSITION_DURATION)
+                            .attr("r","5")
+                            .style("fill", function (d:any) {
+                                return new Date(d.timestamp) < medianTimestamp ? '#e53935' : '#4CAF50'; // red : green
+                            })
+                            .transition()
+                            .duration(TRANSITION_DURATION)
+                            .attr('r','2')
+                            .each("end", fill);
+                    }
 
                 dots.attr("cx", (d:any) => {
                         return this.x(d.x);
@@ -90,19 +115,9 @@ export class PlotDirective implements ng.IDirective {
                         return this.y(d.y);
                     });
 
-                //Update…
-                dots.transition()
-                    .duration(TRANSTION_DURATION)
-                    .attr("r", "2");
-
-
-                dots.style("fill", function (d:any) {
-                        return new Date(d.timestamp) < medianTimestamp ? '#e53935' : '#4CAF50'; // red : green
-                    });
-
                 dots.exit()
                     .transition()
-                    .duration(TRANSTION_DURATION)
+                    .duration(TRANSITION_DURATION)
                     .attr("r", "0")
                     .remove();
             };
@@ -136,7 +151,7 @@ export class PlotDirective implements ng.IDirective {
                 this.yAxisElement = svg.append("g")
                     .attr("class", "y axis");
 
-                refreshChart();
+                refreshChart(true);
             }
 
             scope.$watch('newEntry', (newEntry: any[]) => {
@@ -165,12 +180,10 @@ export class PlotDirective implements ng.IDirective {
                         }
                     }
                 });
-                //console.log(angular.copy(scope.chartData));
                 scope.chartData.shift();
                 refreshChart();
                 scope.chartData.push(newPoint);
                 refreshChart();
-                //console.log(angular.copy(scope.chartData));
             });
         }
     }

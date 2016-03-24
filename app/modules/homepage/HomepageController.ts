@@ -16,7 +16,7 @@ export class HomepageController {
         this.data = data;
         this.HomeService = HomeService;
         let firstEntry = this.data.data[0]['@graph'];
-        const NB_SECTORS = 10;
+        const NB_SECTORS = 5;
         for(let i = 0; i < NB_SECTORS; i++){
             if(firstEntry[i]['waves:relatedSector']) {
                 this.sectors.push(firstEntry[i]['waves:relatedSector']['@id']);
@@ -53,7 +53,7 @@ export class HomepageController {
         });
 
         //this.fetchNewData();
-        $interval(this.fetchNewData,4000);
+        $interval(this.fetchNewData,2000);
 
     }
 
