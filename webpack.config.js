@@ -58,9 +58,12 @@ var config = {
   devServer: {
     port: 3000,
     proxy: {
-      '/api*': {
-        target: 'http://10.1.1.142:9090',
-        secure: false
+      '/api': {
+        target: 'http://10.1.1.142:9090'
+      },
+      '/ws': {
+        target: 'ws://10.1.1.142:9090',
+        ws: true
       }
     }
   }

@@ -155,7 +155,6 @@ export class PlotDirective implements ng.IDirective {
             }
 
             scope.$watch('newEntry', (newEntry: any[]) => {
-
                 let ySector = scope.chartName.split('_')[0];
                 let xSector = scope.chartName.split('_')[1];
                 if(xSector === ySector || angular.isUndefined(newEntry)){

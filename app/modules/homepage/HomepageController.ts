@@ -1,4 +1,5 @@
 import {HomeService} from "../../services/HomeService";
+
 /**
  * The homepage controller for the app. The controller:
  * - display a <hello world> message
@@ -11,7 +12,7 @@ export class HomepageController {
     public sectors: string[] = [];
     public newEntry: any;
 
-    constructor(HomeService: HomeService, $interval:ng.IIntervalService, data: any){
+    constructor($scope: ng.IScope, HomeService: HomeService, $interval:ng.IIntervalService, data: any){
         "ngInject";
         this.data = data;
         this.HomeService = HomeService;
@@ -53,12 +54,24 @@ export class HomepageController {
         });
 
         //this.fetchNewData();
-        $interval(this.fetchNewData,2000);
+        //$interval(this.fetchNewData,2000);
 
-    }
+        var client = new WebSocket('ws://localhost:3000/ws/123', 'echo-protocol');
+        client.onerror = function() {
+            console.log('Connection Error');
+        };
 
-    fetchNewData = () => {
-        this.newEntry = this.HomeService.getNewEntry()['@graph'];
-        //console.log(this.newEntry);
+        client.onopen = function() {
+            console.log('WebSocket Client Connected');
+        };
+
+        client.onclose = function() {
+            console.log('echo-protocol Client Closed');
+        };
+
+        client.onmessage = (e) => {
+            this.newEntry = JSON.parse(e.data)['@graph'];
+            $scope.$apply();
+        };
     }
 }
