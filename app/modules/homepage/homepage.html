@@ -1,7 +1,26 @@
 <div class="homepage" data-layout="column" data-layout-padding>
-    <div layout="row" data-layout-align="space-around" data-layout-padding data-layout-wrap class="plots-container">
-        <div ng-repeat="(chartName,chartData) in Home.chartData" flex="20">
-            <plot chart-name="chartName" chart-data="chartData" new-entry="Home.newEntry"></plot>
+    <h2 ng-if="Home.data.length === 0">
+        Pas de données
+    </h2>
+    <div ng-if="Home.data.length > 1">
+        <div>
+            <p class="yesterday" data-layout="row" data-layout-align="start center">
+                <span class="legend"></span>
+                <span>
+                    <b>Du</b> {{Home.yesterday | date:'EEEE dd MMMM yyyy'}} <small><i>{{Home.yesterday | date:'(HH:mm)'}}</i></small><br><b>Au</b> {{Home.medianDate | date:'EEEE dd MMMM yyyy'}} <small><i>{{Home.yesterday | date:'(HH:mm)'}}</i></small>
+                </span>
+            </p>
+            <p class="today" data-layout="row" data-layout-align="start center">
+                <span class="legend"></span>
+                <span>
+                    <b>Du</b> {{Home.medianDate | date:'EEEE dd MMMM yyyy'}} <small><i>{{Home.medianDate | date:'(HH:mm)'}}</i></small><br><b>Au</b> {{Home.today | date:'EEEE dd MMMM yyyy'}} <small><i>{{Home.medianDate | date:'(HH:mm)'}}</i></small>
+                </span>
+            </p>
+        </div>
+        <div layout="row" data-layout-align="space-around" data-layout-padding data-layout-wrap class="plots-container">
+            <div ng-repeat="(chartName,chartData) in Home.chartData" flex="20">
+                <plot chart-name="chartName" chart-data="chartData" new-entry="Home.newEntry"></plot>
+            </div>
         </div>
     </div>
 </div>

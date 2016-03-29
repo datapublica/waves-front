@@ -54,6 +54,7 @@ export class PlotDirective implements ng.IDirective {
                 .attr("transform", "translate(" + marginRight + "," + marginTop + ")");
             var refreshChart = (firstLoad?) => {
                 const medianTimestamp = new Date(scope.chartData[Math.round(scope.chartData.length / 2)].timestamp);
+                //console.log(medianTimestamp);
 
                 scope.chartData.forEach(function (d:any) {
                     d.x = +d.x;
@@ -150,6 +151,26 @@ export class PlotDirective implements ng.IDirective {
 
                 this.yAxisElement = svg.append("g")
                     .attr("class", "y axis");
+
+                this.xAxisElement
+                    .append("text")
+                    .attr("class", "label")
+                    .attr("x", width/2)
+                    .attr("y", 35)
+                    .style("text-anchor", "middle")
+                    .text(sector2);
+
+                this.yAxisElement
+                    .append("text")
+                    .attr("class", "label")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", -20)
+                    .attr("x", -height/2)
+                    .attr("dy", ".71em")
+                    .style("text-anchor", "middle")
+                    .text(() => {
+                        return sector1.length > 18 ? sector1.substring(0,12) + '...' : sector1
+                    });
 
                 refreshChart(true);
             }

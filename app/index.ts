@@ -6,7 +6,8 @@
 import 'angular';
 import 'angular-material';
 import 'angular-ui-router';
-import 'angular-websocket/dist/angular-websocket.js';
+require('angular-i18n/angular-locale_fr-fr.js');
+
 
 /**
  * Importing external stylesheets
@@ -34,7 +35,6 @@ module app {
         .module('app', [
             "ui.router",
             "ngMaterial",
-            "ngWebSocket",
             "app.components",
             "app.services",
             "app.homepage"
