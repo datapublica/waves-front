@@ -63,7 +63,7 @@ export class HomepageController {
             });
         }
 
-        var client = new WebSocket('ws://localhost:3000/ws/123', 'echo-protocol');
+        var client = new WebSocket('./ws/123', 'echo-protocol');
         client.onerror = function() {
             console.log('Connection Error');
         };

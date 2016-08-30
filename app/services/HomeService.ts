@@ -10,7 +10,7 @@ export class HomeService {
     }
 
     public getData() : any {
-        return this.http.get('/api/123');
+        return this.http.get('./api/123');
     }
 
     public getSectorLabel(label){

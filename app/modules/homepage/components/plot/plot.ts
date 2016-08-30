@@ -99,7 +99,7 @@ export class PlotDirective implements ng.IDirective {
                             .style("fill", 'grey')
                             .transition()
                             .duration(TRANSITION_DURATION)
-                            .attr("r","5")
+                            .attr("r","8")
                             .style("fill", function (d:any) {
                                 return new Date(d.timestamp) < medianTimestamp ? '#e53935' : '#4CAF50'; // red : green
                             })
