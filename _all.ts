@@ -6,4 +6,3 @@
 /// <reference path="app/modules/s3f/index.ts" />
 
 declare var ON_PROD: boolean;
-declare var OverlappingMarkerSpiderfier: any; // oms global variable

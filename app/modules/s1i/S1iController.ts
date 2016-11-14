@@ -8,8 +8,9 @@ export class S1iController {
     public units: any[];
     public selectedUnit: any;
     public selectUnit: Function;
+    public latestValue: any;
     
-    constructor($location: ng.ILocationService, context: any) {
+    constructor($location: ng.ILocationService, $timeout: ng.ITimeoutService, context: any) {
         "ngInject";
         var ctrl = this;
         
@@ -68,7 +69,11 @@ export class S1iController {
             var parseData = JSON.parse(e.data);
             var sensor = parseData['@graph'][0]['ssn:isProducedBy']['@id'];
             var newValue = parseData['@graph'][1]['qudt:numericValue']['@value'];
-            console.log(extractAfterSharp(sensor), newValue, extractAfterSharp(unitDic[sensor]));
+            var unit = unitDic[sensor];
+            if(unit){
+                // If the message is about a sensor on the unit we have selected, we push it to the sensor map directive
+                $timeout(()=>ctrl.latestValue = {sensor, newValue, unit}, 0);
+            }
         };
 
     }

@@ -21,23 +21,29 @@ export class SensorsMapDirective implements ng.IDirective {
     private markersArray = [];
     private mapPoints;
     private $scope;
+    private max: number;
+    private min: number;
+    private COLOR_SCALE: any;
 
     constructor() {
 
         this.scope = {
-            mapPoints: '='
+            mapPoints: '=',
+            latestValue: '='
         };
 
         this.template = <string>require('./sensors-map.html');
         this.link = ($scope: SensorsMapDirectiveScope) :void => {
+    
+            this.min = Infinity;
+            this.max = 0;
 
             this.$scope= $scope; // we lose the this context in the watch callback
     
-            $scope.$watch('mapPoints', (n, o) => {
-                if(n !== o){
-                    this.$scope.mapPoints = n;
-                    this.cleanMap();
-                    this.addPointsToMap();
+            // console.log(this.$scope.mapPoints);
+            $scope.$watch('latestValue', (n) => {
+                if(n){
+                    this.processColorScale(n);
                 }
             });
             
@@ -52,40 +58,61 @@ export class SensorsMapDirective implements ng.IDirective {
     private initMap:Function = ():void  =>{
         this.$scope.map = L.map('sensorsMap').setView(this.franceLoc, 6);
         L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGVvbmNsZW0iLCJhIjoiY2lpcjh4Z3E5MDA5N3Zra3M0cWdkZWRyZyJ9.LZGaNGGMjhC8Ck8RLHGvXA').addTo(this.$scope.map);
-
+    
         //Draw the Leaflet Circles
         this.addPointsToMap();
     };
-
     /**
-     * Removes the geojson/canvas layers off the map
+     * Will determine if a value is red, yellow or green based on the values of other points
      */
-    private cleanMap:Function = ():void => {
-        angular.forEach(this.markersArray, (layer) => {
-            this.$scope.map.removeLayer(layer);
+    private processColorScale:Function = (latestValue):void => {
+        this.markersArray.forEach(marker => {
+            if(marker.options.point['@id'] === latestValue.sensor){
+                marker.options.point.value = parseInt(latestValue.newValue, 10);
+            }
+            var value = marker.options.point.value;
+            if(value){
+                if(value > this.max){
+                    this.max = value;
+                } else if(value < this.min){
+                    this.min = value;
+                }
+            }
+        });
+        this.COLOR_SCALE = d3.scale.linear();
+        this.COLOR_SCALE.domain([this.min,this.max]);
+        //noinspection TypeScriptValidateTypes
+        this.COLOR_SCALE.interpolate(d3.interpolateHcl).range([d3.rgb("#4CAF50"), d3.rgb('#F44336')]);
+        
+        this.markersArray.forEach(marker => {
+            var markerValue = marker.options.point.value;
+            var markerLabel = marker.options.point['rdfs:label'];
+            if(markerValue){
+                marker.setStyle({fillColor: this.COLOR_SCALE(markerValue), color: this.COLOR_SCALE(markerValue)});
+                marker.bindPopup(markerLabel + ' : ' + markerValue + ' ' + latestValue.unit);
+            } else {
+                marker.bindPopup(markerLabel);
+            }
         });
     };
+    
     /**
      * Add the selected points to the map
      */
     private addPointsToMap:Function = ():void => {
     
-    
-        const oms = new OverlappingMarkerSpiderfier(this.$scope.map, {keepSpiderfied: true, nearbyDistance: 50});
-    
         this.$scope.mapPoints.filter(
             point => point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'] > 0 && point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value'] > 0
         ).forEach((point: any) => {
-            var icon: L.Icon = new L.Icon.Default({shadowSize:[0,0]});
-            var marker = L.marker(new L.LatLng(point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'], point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value']), {icon : icon});
+            var pathOptions = {point, fillOpacity: 0.8};
+            var marker = L.circle([point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'], point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value']], 250, pathOptions);
             marker.bindPopup(point['rdfs:label']);
             this.markersArray.push(marker);
             this.$scope.map.addLayer(marker);
-            oms.addMarker(marker);
         });
-
+    
         // Fitting to the markers
         this.$scope.map.fitBounds(L.featureGroup(this.markersArray).getBounds());
         window.dispatchEvent(new Event('resize')); // Resize event need to be manually trigger otherwise the virtual repeat doesn't render
-    }
+    };
 }
