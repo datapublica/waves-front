@@ -4,6 +4,6 @@ export function palette($mdThemingProvider: IThemingProvider) {
     "ngInject"; //needed when directly exporting a class or function
     $mdThemingProvider
         .theme('default')
-        .primaryPalette('indigo')
-        .accentPalette('light-green');
+        .primaryPalette('brown')
+        .accentPalette('amber');
 }

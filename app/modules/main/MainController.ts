@@ -5,10 +5,14 @@
  */
 export class MainController {
     public goToState: Function;
+    public activeTab: string;
     
     constructor($state: ng.ui.IStateService) {
         "ngInject";
         var ctrl = this;
+        
+        ctrl.activeTab = $state.current.name;
+    
         ctrl.goToState = function(state: string) {
             $state.go('main.'+state);
         }

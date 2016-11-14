@@ -15,7 +15,7 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
         controllerAs: 'S1i',
         resolve: {
             data: (SectorService: SectorService) => {
-                return SectorService.getData();
+                return SectorService.getS1iData();
             }
         }
     });

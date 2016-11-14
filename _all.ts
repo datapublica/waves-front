@@ -1,4 +1,4 @@
-/// <reference path="typings/main.d.ts" />
+/// <reference path="typings/index.d.ts" />
 /// <reference path="app/services/rdf.d.ts" />
 /// <reference path="app/services/rdf.module.d.ts" />
 /// <reference path="app/config/core/coreConfig.ts" />

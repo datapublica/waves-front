@@ -1,10 +1,10 @@
 <div class="main">
     <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Overview" md-on-select="Main.goToState('monitoring')">
+        <md-tab label="Overview" md-on-select="Main.goToState('monitoring')" md-active="Main.activeTab === 'main.monitoring'">
         </md-tab>
-        <md-tab label="S-1i" md-on-select="Main.goToState('s1i')">
+        <md-tab label="S-1i" md-on-select="Main.goToState('s1i')" md-active="Main.activeTab === 'main.s1i'">
         </md-tab>
-        <md-tab label="S-3f" md-on-select="Main.goToState('s3f')">
+        <md-tab label="S-3f" md-on-select="Main.goToState('s3f')" md-active="Main.activeTab === 'main.s3f'">
         </md-tab>
     </md-tabs>
 
