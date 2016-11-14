@@ -1,6 +1,15 @@
 <div class="s1i" data-layout="row" data-layout-padding>
     <div flex="33">
-        Hello
+        <div data-layout="row">
+            <md-input-container flex="100">
+                <label>Unit</label>
+                <md-select ng-model="S1i.selectedUnit" ng-change="S1i.selectUnit()">
+                    <md-option ng-repeat="unit in S1i.units">
+                        {{unit.name}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+        </div>
     </div>
     <div flex="66">
         <sensors-map map-points="S1i.sensors"></sensors-map>
