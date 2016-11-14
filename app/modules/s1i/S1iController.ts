@@ -21,17 +21,18 @@ export class S1iController {
         if(this.data.length !== 0 ){
             this.SectorService = SectorService;
             let firstEntry = this.data[0]['@graph'];
-            const NB_SECTORS = 5;
+            const NB_SECTORS = Math.min(5, firstEntry.length);
             for(let i = 0; i < NB_SECTORS; i++){
                 if(firstEntry[i]['waves:relatedSector']) {
                     this.sectors.push(firstEntry[i]['waves:relatedSector']['@id']);
                 }
             }
-            this.today = new Date(this.data[this.data.length - 1]['@graph'][firstEntry.length - 1]['waves:time']['@value']);
+            var lastEntryGraph = this.data[this.data.length - 1]['@graph'];
+            this.today = new Date(lastEntryGraph[lastEntryGraph.length - 1]['waves:time']['@value']);
             let buff: Date = angular.copy(this.today);
             this.yesterday = new Date(buff.setDate(buff.getDate() - 2));
             this.medianDate = new Date(buff.setDate(buff.getDate() +1));
-            console.log( this.yesterday, this.today);
+
             this.data.forEach((entry, index) => {
                 this.sectors.forEach((sector1) => {
                     this.sectors.forEach((sector2) => {
@@ -63,7 +64,7 @@ export class S1iController {
             });
         }
 
-        var client = new WebSocket('./ws/123', 'echo-protocol');
+        var client = new WebSocket('ws://localhost:3000/ws/123', 'echo-protocol');
         client.onerror = function() {
             console.log('Connection Error');
         };

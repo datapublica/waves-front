@@ -6,4 +6,4 @@
 /// <reference path="app/modules/s1i/index.ts" />
 
 declare var ON_PROD: boolean;
-declare var ON_TEST: boolean;
+declare var OverlappingMarkerSpiderfier: any; // oms global variable

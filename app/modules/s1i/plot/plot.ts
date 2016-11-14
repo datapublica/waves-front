@@ -1,5 +1,5 @@
-import {directive} from "../../decorators/directive";
-import {SectorService} from "../../services/SectorService";
+import {directive} from "../../../decorators/directive";
+import {SectorService} from "../../../services/SectorService";
 
 // Directive stylesheet
 import './plot.scss';
@@ -40,7 +40,7 @@ export class PlotDirective implements ng.IDirective {
             const TRANSITION_DURATION = 1000;
             let graphElement: any = graphContainer[0][0];
             const containerDimensions = graphElement.getBoundingClientRect();
-
+    
             var marginRight = 60;
             var marginTop = 20;
             var width = containerDimensions.width-marginRight,
@@ -54,7 +54,8 @@ export class PlotDirective implements ng.IDirective {
             var refreshChart = (firstLoad?) => {
                 const medianTimestamp = new Date(scope.chartData[Math.round(scope.chartData.length / 2)].timestamp);
                 //console.log(medianTimestamp);
-
+    
+                scope.chartData = scope.chartData.filter(p => p.x && p.y);
                 scope.chartData.forEach(function (d:any) {
                     d.x = +d.x;
                     d.y = +d.y;
@@ -175,6 +176,9 @@ export class PlotDirective implements ng.IDirective {
             }
 
             scope.$watch('newEntry', (newEntry: any[]) => {
+                if(!newEntry){
+                    return;
+                }
                 let ySector = scope.chartName.split('_')[0];
                 let xSector = scope.chartName.split('_')[1];
                 if(xSector === ySector || angular.isUndefined(newEntry)){

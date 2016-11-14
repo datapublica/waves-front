@@ -9,6 +9,25 @@ export class S3fController {
         "ngInject";
         var ctrl = this;
         ctrl.sensors = context.data['@graph'] && context.data['@graph'].filter(s => s['@type'] === 'http://purl.oclc.org/NET/ssnx/ssn#Sensor');
-        console.log(ctrl.sensors);
+    
+    
+        // WebSocket
+    
+        var client = new WebSocket('ws://localhost:3000/ws/54', 'echo-protocol');
+        client.onerror = function() {
+            console.log('Connection Error');
+        };
+    
+        client.onopen = function() {
+            console.log('WebSocket Client Connected');
+        };
+    
+        client.onclose = function() {
+            console.log('echo-protocol Client Closed');
+        };
+    
+        client.onmessage = (e) => {
+            console.log(e);
+        };
     }
 }

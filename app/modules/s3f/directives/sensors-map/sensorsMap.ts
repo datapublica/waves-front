@@ -1,9 +1,5 @@
 import {directive} from "./../../../../decorators/directive";
 
-// Requiring leaflet (doesn't support ES6 syntax)
-var L:any = require('leaflet');
-require('leaflet/dist/leaflet.css');
-
 // Directive stylesheet
 import './sensors-map.scss';
 
@@ -13,7 +9,7 @@ interface SensorsMapDirectiveScope extends ng.IScope
     mapPoints:any;
 }
 
-@directive('$timeout')
+@directive()
 export class SensorsMapDirective implements ng.IDirective {
 
     public scope:any;
@@ -22,12 +18,11 @@ export class SensorsMapDirective implements ng.IDirective {
 
     private map: L.Map;
     private franceLoc = [47,2];
-    private activeLayers = [];
+    private markersArray = [];
     private mapPoints;
     private $scope;
-    private $timeout: ng.ITimeoutService;
 
-    constructor($timeout: ng.ITimeoutService) {
+    constructor() {
 
         this.scope = {
             mapPoints: '='
@@ -37,7 +32,6 @@ export class SensorsMapDirective implements ng.IDirective {
         this.link = ($scope: SensorsMapDirectiveScope) :void => {
 
             this.$scope= $scope; // we lose the this context in the watch callback
-            this.$timeout= $timeout; // we lose the this context in the watch callback
     
             $scope.$watch('mapPoints', (n, o) => {
                 if(n !== o){
@@ -67,7 +61,7 @@ export class SensorsMapDirective implements ng.IDirective {
      * Removes the geojson/canvas layers off the map
      */
     private cleanMap:Function = ():void => {
-        angular.forEach(this.activeLayers, (layer) => {
+        angular.forEach(this.markersArray, (layer) => {
             this.$scope.map.removeLayer(layer);
         });
     };
@@ -77,28 +71,21 @@ export class SensorsMapDirective implements ng.IDirective {
     private addPointsToMap:Function = ():void => {
     
     
-        const POINT_COLOR = "#FFC107";
+        const oms = new OverlappingMarkerSpiderfier(this.$scope.map, {keepSpiderfied: true, nearbyDistance: 50});
+    
         this.$scope.mapPoints.filter(
             point => point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'] > 0 && point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value'] > 0
         ).forEach((point: any) => {
-            var circle = L.circle([point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'], point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value']], 100, {
-                color: POINT_COLOR,
-                fillColor: POINT_COLOR,
-                fillOpacity: 1,
-                point: point,
-                id: point.id
-            });
-            this.activeLayers.push(circle);
-            circle.addTo(this.$scope.map).on('click', (point: L.LeafletEvent) => {
-                console.log(point);
-            });
+            var icon: L.Icon = new L.Icon.Default({shadowSize:[0,0]});
+            var marker = L.marker(new L.LatLng(point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'], point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value']), {icon : icon});
+            marker.bindPopup(point['rdfs:label']);
+            this.markersArray.push(marker);
+            this.$scope.map.addLayer(marker);
+            oms.addMarker(marker);
         });
-        
+
         // Fitting to the markers
-        // this.$timeout(() => {
-            var group: L.FeatureGroup<L.Marker> = new L.featureGroup(this.activeLayers);
-            this.$scope.map.fitBounds(group.getBounds());
-        // }, 3000);
+        this.$scope.map.fitBounds(L.featureGroup(this.markersArray).getBounds());
         window.dispatchEvent(new Event('resize')); // Resize event need to be manually trigger otherwise the virtual repeat doesn't render
     }
 }
