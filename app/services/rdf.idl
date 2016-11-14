@@ -1,0 +1,144 @@
+
+[NoInterfaceObject]
+interface Triple {
+    readonly attribute RDFNode subject;
+    readonly attribute RDFNode predicate;
+    readonly attribute RDFNode object;
+    stringifier DOMString toString ();
+    boolean               equals (Triple otherTriple);
+};
+
+[NoInterfaceObject]
+interface Graph {
+    readonly attribute unsigned long          length;
+    Graph            add (Triple triple);
+    Graph            remove (Triple triple);
+    Graph            removeMatches (any? subject, any? predicate, any? object);
+    sequence<Triple> toArray ();
+    boolean          some (TripleFilter callback);
+    boolean          every (TripleFilter callback);
+    Graph            filter (TripleFilter filter);
+    void             forEach (TripleCallback callback);
+    Graph            match (any? subject, any? predicate, any? object, optional unsigned long limit);
+    Graph            merge (Graph graph);
+    Graph            addAll (Graph graph);
+    readonly attribute sequence<TripleAction> actions;
+    Graph            addAction (TripleAction action, optional boolean run);
+};
+
+[NoInterfaceObject]
+interface RDFNode {
+    readonly attribute any       nominalValue;
+    readonly attribute DOMString interfaceName;
+    DOMString toString ();
+    any       valueOf ();
+    DOMString toNT ();
+    boolean   equals (any tocompare);
+};
+
+[NoInterfaceObject]
+interface NamedNode : RDFNode {
+    readonly attribute any nominalValue;
+};
+
+[NoInterfaceObject]
+interface BlankNode : RDFNode {
+    readonly attribute any nominalValue;
+};
+
+[NoInterfaceObject]
+interface Literal : RDFNode {
+    readonly attribute DOMString  nominalValue;
+    readonly attribute DOMString? language;
+    readonly attribute NamedNode? datatype;
+    any valueOf ();
+};
+
+[NoInterfaceObject, Callback]
+interface TripleFilter {
+    boolean test (Triple triple);
+};
+
+[NoInterfaceObject, Callback]
+interface TripleCallback {
+    void run (Triple triple, Graph graph);
+};
+
+[NoInterfaceObject]
+interface TripleAction {
+    attribute TripleFilter   test;
+    attribute TripleCallback action;
+    void run (Triple triple, Graph graph);
+};
+
+[NoInterfaceObject]
+interface PrefixMap {
+    getter DOMString get (DOMString prefix);
+    setter void      set (DOMString prefix, DOMString iri);
+    deleter void     remove (DOMString prefix);
+    DOMString                  resolve (DOMString curie);
+    DOMString                  shrink (DOMString iri);
+    void                       setDefault (DOMString iri);
+    PrefixMap                  addAll (PrefixMap prefixes, optional boolean override);
+};
+
+[NoInterfaceObject]
+interface TermMap {
+    getter DOMString get (DOMString term);
+    setter void      set (DOMString term, DOMString iri);
+    deleter void     remove (DOMString term);
+    DOMString                  resolve (DOMString term);
+    DOMString                  shrink (DOMString iri);
+    void                       setDefault (DOMString iri);
+    TermmMap                   addAll (TermMap terms, optional boolean override);
+};
+
+[NoInterfaceObject]
+interface Profile {
+    readonly attribute PrefixMap prefixes;
+    readonly attribute TermMap   terms;
+
+    /**
+     * @param toresolve stuff
+     */
+    DOMString resolve (DOMString toresolve);
+    void      setDefaultVocabulary (DOMString iri);
+    void      setDefaultPrefix (DOMString iri);
+    void      setTerm (DOMString term, DOMString iri);
+    void      setPrefix (DOMString prefix, DOMString iri);
+    Profile   importProfile (Profile profile, optional boolean override);
+};
+
+interface RDFEnvironment : Profile {
+    BlankNode    createBlankNode ();
+    NamedNode    createNamedNode (DOMString value);
+    Literal      createLiteral (DOMString value, optional DOMString? language, optional NamedNode? datatype);
+    Triple       createTriple (RDFNode subject, RDFNode predicate, RDFNode object);
+    Graph        createGraph (optional Triple[] triples);
+    TripleAction createAction (TripleFilter test, TripleCallback action);
+    Profile      createProfile (optional boolean empty);
+    TermMap      createTermMap (optional boolean empty);
+    PrefixMap    createPrefixMap (optional boolean empty);
+};
+
+[NoInterfaceObject, Constructor, Constructor(in RDFEnvironment)]
+interface DataParser {
+    readonly attribute Graph processorGraph;
+    boolean parse (any toparse, ParserCallback? callback, optional DOMString base, optional TripleFilter filter, optional Graph graph);
+    boolean process (any toparse, ProcessorCallback callback, optional DOMString base, optional TripleFilter filter);
+};
+
+[NoInterfaceObject, Constructor, Constructor(in RDFEnvironment)]
+interface DataSerializer {
+    any serialize (Graph graph);
+};
+
+[NoInterfaceObject, Callback]
+interface ParserCallback {
+    void run (Graph graph);
+};
+
+[NoInterfaceObject, Callback]
+interface ProcessorCallback {
+    void run (Triple triple);
+};

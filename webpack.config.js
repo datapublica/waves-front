@@ -35,7 +35,7 @@ var config = {
         exclude: /node_modules/
       },
       {
-        test: /\.(html|json)$/,
+        test: /\.(html|json|trig)$/,
         loader:'raw'
       },
       {

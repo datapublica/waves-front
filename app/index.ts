@@ -20,8 +20,8 @@ import 'angular-material/angular-material.css';
 import {config} from './config/core/coreConfig'
 import {run} from './config/core/coreRun'
 import {palette} from './config/material/palette'
-import './modules/homepage/index';
 import './services';
+import './modules/monitoring/index';
 import './components';
 
 import './assets/data/data.json';

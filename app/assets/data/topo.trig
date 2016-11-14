@@ -1,0 +1,119 @@
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix foaf:   <http://xmlns.com/foaf/0.1/> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix waves:  <http://www.waves-rsp.org/configuration#> .
+@prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://localhost:8181/waves/versailles/> .
+
+<http://localhost:8181/waves/first-tests> {
+
+  <installation>
+	rdf:type        	waves:Installation ;
+	waves:name		"historisation"^^xsd:string ;
+
+	# ZooKeeper configuration (not to use Storm default ZooKeeper server)
+	# Note: This property is required when using Storm Kafka spout that
+	#       discovers Kafka servers through their ZooKeeper registration.
+	waves:zookeeperHosts	"localhost:2181"^^xsd:string ;
+
+	# Global Redis database
+	waves:redisHost	"localhost:6379" ;
+	rdfs:label 		"installation"^^xsd:string .
+
+  <stream/1i>
+	rdf:type		waves:Stream ;
+	rdfs:label 		"S-1i" ;
+	waves:installation	<installation> ;
+	waves:converter   	<converter/1i> ;
+	waves:id		"54"^^xsd:integer .
+
+  <stream/3f>
+	rdf:type		waves:Stream ;
+	rdfs:label 		"S-3f" ;
+	waves:installation	<installation> ;
+	waves:id		"123"^^xsd:integer .
+
+  <filter/3f>
+	rdf:type		waves:Filter ;
+	rdfs:label		"F-3f" ;
+	waves:installation	<installation> ;
+	waves:consumesStream	_:F-3f_S-1i ;
+	waves:producesStream	<stream/3f> ;
+	#waves:rdfStore		_:b1 ;
+	#waves:staticFeed	_:b2;
+	waves:stepRate		"PT900S"^^xsd:duration ;
+	waves:query		"""
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX qudt:<http://data.nasa.gov/qudt/owl/qudt#>
+PREFIX waves:<http://waves-rsp.org/resource#>
+PREFIX ssn:<http://purl.oclc.org/NET/ssnx/ssn#>
+PREFIX cuahsi:<http://his.cuahsi.org/ontology/cuahsi#>
+
+CONSTRUCT {
+			 ?s ?p ?o }
+WHERE {  ?s ?p ?o
+    		}
+    		""" .
+
+  _:F-3f_S-1i
+	rdfs:label		"F-3f_S-1i" ;
+	waves:stream		<stream/1i> ;
+	waves:windowSpan	"PT900S"^^xsd:duration .
+
+
+
+
+  # Static data SPARQL feed
+  _:b2	rdf:type		waves:SparqlFeed ;
+	rdfs:label 		"sparql1Feed" ;
+	waves:feedType 		"SPARQL" ;
+	waves:location		"http://localhost:8181/openrdf-sesame/repositories/wavesRepo" ;
+	waves:refreshInterval	"PT2M"^^xsd:duration ;
+	waves:query		"""
+	PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+	PREFIX ssn:<http://purl.oclc.org/NET/ssnx/ssn#>
+	PREFIX cuahsi:<http://his.cuahsi.org/ontology/cuahsi#>
+	CONSTRUCT {
+	    ?sector rdf:type ssn:Platform .
+        ?inputFlowSensor ssn:onPlatform ?sector .
+		?inputFlowSensor ssn:observes ?inputFlow .
+		?inputFlow cuahsi:relatedTo ?sector .
+    	?inputFlow a cuahsi:inputFlow .
+    	?outputFlowSensor ssn:onPlatform ?sector .
+        ?outputFlowSensor ssn:observes ?outputFlow .
+        ?outputFlow a cuahsi:outputFlow .
+        ?outputFlow cuahsi:relatedTo ?sector . }
+	WHERE {
+        ?sector rdf:type ssn:Platform .
+        ?inputFlowSensor ssn:onPlatform ?sector .
+		?inputFlowSensor ssn:observes ?inputFlow .
+		?inputFlow cuahsi:relatedTo ?sector .
+    	?inputFlow a cuahsi:inputFlow .
+  		OPTIONAL {
+          ?outputFlowSensor ssn:onPlatform ?sector .
+          ?outputFlowSensor ssn:observes ?outputFlow .
+          ?outputFlow a cuahsi:outputFlow .
+          ?outputFlow cuahsi:relatedTo ?sector .
+ 		}
+	}""" .
+
+
+  <converter/1i>
+  	rdf:type			waves:Converter ;
+	waves:model			"@prefix ssn:<http://purl.oclc.org/NET/ssnx/ssn#> . @prefix qudt:<http://data.nasa.gov/qudt/owl/qudt#> . @prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> . <http://rsp.waves.org/event/native/key/x?type=eventId>  rdf:type ssn:SensorOutput ; ssn:isProducedBy <http://rsp.waves.org/event/native/key/id?type=uri>;ssn:hasValue <http://rsp.waves.org/event/native/key/x?type=ObservationId&prefix=waves>; ssn:startTime <http://rsp.waves.org/event/native/key/timestamp?type=timestamp> . <http://rsp.waves.org/event/native/key/x?type=ObservationId&prefix=waves> a ssn:ObservationValue ;qudt:numericValue <http://rsp.waves.org/event/native/key/value?type=double&unit=unit&scale=scale> ; qudt:unit <http://rsp.waves.org/event/native/key/unit> ." ;
+	waves:unit			<unit/1i> ;
+	waves:query			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#> prefix ssn:<http://purl.oclc.org/NET/ssnx/ssn#> prefix qudt:<http://data.nasa.gov/qudt/owl/qudt#> select * where { ?sensorUri rdf:type ssn:Sensor ; qudt:unit ?unit ; rdfs:label ?sensorName . }" ;
+	waves:location		"http://localhost:8181/openrdf-sesame/repositories/wavesRepo";
+	rdfs:label      	"sampleMapper" .
+
+  <unit/1i>
+    rdf:type			waves:Unit ;
+	rdfs:label			"unit" ;
+	waves:unitReferences "<http://qudt.org/vocab/unit#pH> <http://qudt.org/vocab/unit#MilligramPerLiter> <http://qudt.org/vocab/unit#CubicMeterPerHour> <http://qudt.org/vocab/unit#Bar>" ;
+	waves:mappings		 "mH2O: 0.098067 http://www.xxx.com/units/bar, m3/h: http://www.xxx.com/units/m3ph" .
+
+
+
+
+}
