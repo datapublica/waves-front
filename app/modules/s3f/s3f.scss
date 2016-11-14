@@ -1,0 +1,28 @@
+.s3f {
+  .plots-container{
+    margin-bottom:40px;
+    plot{
+      margin-bottom: 50px;
+    }
+  }
+  .today{
+    > span.legend{
+      display: inline-block;
+      width:10px;
+      height: 10px;
+      background-color: #4CAF50;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+  }
+  .yesterday{
+    > span.legend{
+      display: inline-block;
+      width:10px;
+      height: 10px;
+      background-color: #e53935;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+  }
+}

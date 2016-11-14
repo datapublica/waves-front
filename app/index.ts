@@ -22,8 +22,8 @@ import {run} from './config/core/coreRun'
 import {palette} from './config/material/palette'
 import './services';
 import './modules/main';
-import './modules/s1i';
 import './modules/s3f';
+import './modules/s1i';
 import './modules/monitoring';
 import './components';
 

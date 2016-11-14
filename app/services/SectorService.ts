@@ -9,11 +9,11 @@ export class SectorService {
         this.log = $log;
     }
 
-    public getS1iData() : any {
+    public getS3fData() : any {
         return this.http.get('./api/123');
     }
 
-    public getS3fContext() : any {
+    public getS1iContext() : any {
         return this.http.get('./api/context');
     }
 

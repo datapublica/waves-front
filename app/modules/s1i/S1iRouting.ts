@@ -5,17 +5,17 @@ import {SectorService} from "../../services/SectorService";
  */
 
 export function config($stateProvider: ng.ui.IStateProvider): void {
-
+    
     'ngInject'; //needed when directly exporting a class or function
-
+    
     $stateProvider.state('main.s1i', {
         url: '/s1i',
         template: <string>require('./s1i.html'),
         controller: 'S1iController',
         controllerAs: 'S1i',
         resolve: {
-            data: (SectorService: SectorService) => {
-                return SectorService.getS1iData();
+            context : function (SectorService: SectorService) {
+                return SectorService.getS1iContext();
             }
         }
     });

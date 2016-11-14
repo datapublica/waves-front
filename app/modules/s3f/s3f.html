@@ -1,8 +1,26 @@
-<div class="s3f" data-layout="row" data-layout-padding>
-    <div flex="33">
-        Hello
-    </div>
-    <div flex="66">
-        <sensors-map map-points="S3f.sensors"></sensors-map>
+<div class="s3f" data-layout="column" data-layout-padding>
+    <h2 ng-if="S3f.data.length === 0">
+        Pas de données
+    </h2>
+    <div ng-if="S3f.data.length > 1">
+        <div>
+            <p class="yesterday" data-layout="row" data-layout-align="start center">
+                <span class="legend"></span>
+                <span>
+                    <b>Du</b> {{S3f.yesterday | date:'EEEE dd MMMM yyyy'}} <small><i>{{S3f.yesterday | date:'(HH:mm)'}}</i></small><br><b>Au</b> {{S3f.medianDate | date:'EEEE dd MMMM yyyy'}} <small><i>{{S3f.yesterday | date:'(HH:mm)'}}</i></small>
+                </span>
+            </p>
+            <p class="today" data-layout="row" data-layout-align="start center">
+                <span class="legend"></span>
+                <span>
+                    <b>Du</b> {{S3f.medianDate | date:'EEEE dd MMMM yyyy'}} <small><i>{{S3f.medianDate | date:'(HH:mm)'}}</i></small><br><b>Au</b> {{S3f.today | date:'EEEE dd MMMM yyyy'}} <small><i>{{S3f.medianDate | date:'(HH:mm)'}}</i></small>
+                </span>
+            </p>
+        </div>
+        <div layout="row" data-layout-align="space-around" data-layout-padding data-layout-wrap class="plots-container">
+            <div ng-repeat="(chartName,chartData) in S3f.chartData" flex="20">
+                <plot chart-name="chartName" chart-data="chartData" new-entry="S3f.newEntry"></plot>
+            </div>
+        </div>
     </div>
 </div>

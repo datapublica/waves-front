@@ -1,7 +1,7 @@
 import 'angular';
 import 'angular-mocks';
 import '../../services'
-import {S1iController} from './S1iController';
+import {S1iController} from './S3fController';
 import {SectorService} from "../../services/SectorService";
 
 describe("S1i", () =>{
