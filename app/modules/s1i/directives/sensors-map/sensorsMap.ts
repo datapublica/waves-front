@@ -40,7 +40,6 @@ export class SensorsMapDirective implements ng.IDirective {
 
             this.$scope= $scope; // we lose the this context in the watch callback
     
-            // console.log(this.$scope.mapPoints);
             $scope.$watch('latestValue', (n) => {
                 if(n){
                     this.processColorScale(n);
@@ -87,7 +86,7 @@ export class SensorsMapDirective implements ng.IDirective {
         this.markersArray.forEach(marker => {
             var markerValue = marker.options.point.value;
             var markerLabel = marker.options.point['rdfs:label'];
-            if(markerValue){
+            if(angular.isDefined(markerValue)){
                 marker.setStyle({fillColor: this.COLOR_SCALE(markerValue), color: this.COLOR_SCALE(markerValue)});
                 marker.bindPopup(markerLabel + ' : ' + markerValue + ' ' + latestValue.unit);
             } else {
@@ -104,8 +103,8 @@ export class SensorsMapDirective implements ng.IDirective {
         this.$scope.mapPoints.filter(
             point => point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'] > 0 && point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value'] > 0
         ).forEach((point: any) => {
-            var pathOptions = {point, fillOpacity: 0.8};
-            var marker = L.circle([point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'], point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value']], 250, pathOptions);
+            var pathOptions = {point, fillOpacity: 0.5};
+            var marker = L.circle([point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'], point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value']], 350, pathOptions);
             marker.bindPopup(point['rdfs:label']);
             this.markersArray.push(marker);
             this.$scope.map.addLayer(marker);

@@ -9,8 +9,9 @@ export class S1iController {
     public selectedUnit: any;
     public selectUnit: Function;
     public latestValue: any;
+    private data: any;
     
-    constructor($location: ng.ILocationService, $timeout: ng.ITimeoutService, context: any) {
+    constructor($location: ng.ILocationService, $timeout: ng.ITimeoutService, $state:ng.ui.IStateService, context: any, data: any) {
         "ngInject";
         var ctrl = this;
         
@@ -19,27 +20,36 @@ export class S1iController {
             return str.substring(str.indexOf("#") + 1);
         };
         
+        var data = data.data;
+    
         ctrl.units = [
             {
                 name: 'Chlorine',
                 unit: 'MilligramPerLiter'
             },
             {
-                name: 'Pressure',
-                unit: 'Bar'
-            },
-            {
-                name: 'input & output Flow',
+                name: 'Input & Output Flow',
                 unit: 'CubicMeterPerHour'
             },
             {
                 name: 'pH',
                 unit: 'pH'
             },
+            {
+                name: 'Pressure',
+                unit: 'Bar'
+            }
          ];
         
-        ctrl.selectedUnit = $location.search()['unit'] || ctrl.units[0].name;
-        var unitId = ctrl.units.filter(u => u.name === ctrl.selectedUnit)[0].unit;
+        ctrl.selectedUnit = $location.search()['unit'] || ctrl.units[1].name;
+        var unitObject = ctrl.units.filter(u => u.name === ctrl.selectedUnit)[0];
+        if(!unitObject){
+            // If user changes the url manually
+            $timeout(() => {
+                $state.go('main.s1i', {}, {reload:true, inherit: false});
+            }, 0);
+        }
+        var unitId = unitObject.unit;
         
         ctrl.selectUnit = () => {
             $location.search('unit', ctrl.selectedUnit);
@@ -53,6 +63,7 @@ export class S1iController {
         // WebSocket
     
         var client = new WebSocket('ws://localhost:3000/ws/54', 'echo-protocol');
+
         client.onerror = function() {
             console.log('ÇAY KASSAY');
         };
@@ -69,12 +80,14 @@ export class S1iController {
             var parseData = JSON.parse(e.data);
             var sensor = parseData['@graph'][0]['ssn:isProducedBy']['@id'];
             var newValue = parseData['@graph'][1]['qudt:numericValue']['@value'];
-            var unit = unitDic[sensor];
+            var unit = unitDic[sensor] && extractAfterSharp(unitDic[sensor]) || null;
             if(unit){
                 // If the message is about a sensor on the unit we have selected, we push it to the sensor map directive
                 $timeout(()=>ctrl.latestValue = {sensor, newValue, unit}, 0);
             }
         };
+        
+        data.forEach(d => client.onmessage(<MessageEvent>{data: JSON.stringify(d)}));
 
     }
 }

@@ -12,6 +12,10 @@ export class SectorService {
     public getS3fData() : any {
         return this.http.get('./api/123');
     }
+    
+    public getS1iData() : any {
+        return this.http.get('./api/54');
+    }
 
     public getS1iContext() : any {
         return this.http.get('./api/context');
