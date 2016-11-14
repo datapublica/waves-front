@@ -1,12 +1,12 @@
-import {HomeService} from "../../services/HomeService";
+import {SectorService} from "../../services/SectorService";
 
 /**
- * The homepage controller for the app. The controller:
+ * The s1i controller for the app. The controller:
  * - display a <hello world> message
  */
-export class HomepageController {
+export class S1iController {
     public helloWorld: string;
-    private HomeService: HomeService;
+    private SectorService: SectorService;
     public chartData: any = {};
     public data: any;
     public sectors: string[] = [];
@@ -15,11 +15,11 @@ export class HomepageController {
     public today: Date;
     public medianDate: Date;
 
-    constructor($scope: ng.IScope, HomeService: HomeService, data: any){
+    constructor($scope: ng.IScope, SectorService: SectorService, data: any){
         "ngInject";
         this.data = data.data;
         if(this.data.length !== 0 ){
-            this.HomeService = HomeService;
+            this.SectorService = SectorService;
             let firstEntry = this.data[0]['@graph'];
             const NB_SECTORS = 5;
             for(let i = 0; i < NB_SECTORS; i++){
@@ -38,7 +38,7 @@ export class HomepageController {
                         let timestamp = entry['@graph'].filter((input) => {
                             return input['@type'] === "waves:Event";
                         })[0]['waves:time']['@value'];
-                        var combinedName = HomeService.getSectorLabel(sector1)+'_'+HomeService.getSectorLabel(sector2);
+                        var combinedName = SectorService.getSectorLabel(sector1)+'_'+SectorService.getSectorLabel(sector2);
                         if(angular.isUndefined(this.chartData[combinedName])){
                             this.chartData[combinedName] = [];
                         }

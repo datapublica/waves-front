@@ -21,7 +21,10 @@ import {config} from './config/core/coreConfig'
 import {run} from './config/core/coreRun'
 import {palette} from './config/material/palette'
 import './services';
-import './modules/monitoring/index';
+import './modules/main';
+import './modules/s1i';
+import './modules/s3f';
+import './modules/monitoring';
 import './components';
 
 import './assets/data/data.json';
@@ -37,7 +40,10 @@ module app {
             "ngMaterial",
             "app.components",
             "app.services",
-            "app.homepage"
+            "app.main",
+            "app.monitoring",
+            "app.s1i",
+            "app.s3f"
         ])
         .config(config)
         .config(palette)

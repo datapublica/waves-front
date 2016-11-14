@@ -1,11 +1,10 @@
-// Component stylesheet
-import {directive} from "../../../../decorators/directive";
+import {directive} from "../../decorators/directive";
+import {SectorService} from "../../services/SectorService";
 
 // Directive stylesheet
 import './plot.scss';
 //d3
 import 'd3';
-import {HomeService} from "../../../../services/HomeService";
 
 interface PlotComponentScope extends ng.IScope
 {
@@ -13,7 +12,7 @@ interface PlotComponentScope extends ng.IScope
     chartName: string
 }
 
-@directive('HomeService')
+@directive('SectorService')
 export class PlotDirective implements ng.IDirective {
 
     public scope:any;
@@ -26,7 +25,7 @@ export class PlotDirective implements ng.IDirective {
     private yAxis:any;
     private xAxisElement:any;
     private yAxisElement:any;
-    constructor(private HomeService: HomeService) {
+    constructor(private SectorService: SectorService) {
         this.scope = {
             chartData: '<',
             chartName: '<',
@@ -192,10 +191,10 @@ export class PlotDirective implements ng.IDirective {
                 })[0]['waves:time']['@value'];
                 newEntry.forEach((input) => {
                     if(input['waves:relatedSector']) {
-                        if (HomeService.getSectorLabel(input['waves:relatedSector']['@id']) === xSector) {
+                        if (SectorService.getSectorLabel(input['waves:relatedSector']['@id']) === xSector) {
                             newPoint.x = input['qudt:numericValue']['@value'];
                         }
-                        if (HomeService.getSectorLabel(input['waves:relatedSector']['@id']) === ySector) {
+                        if (SectorService.getSectorLabel(input['waves:relatedSector']['@id']) === ySector) {
                             newPoint.y = input['qudt:numericValue']['@value'];
                         }
                     }

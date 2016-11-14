@@ -3,8 +3,8 @@ import 'angular';
 /**
  * App Services
  */
-import {HomeService} from './HomeService.ts';
+import {SectorService} from './SectorService.ts';
 
 
 angular.module('app.services', [])
-    .service('HomeService', HomeService);
+    .service('SectorService', SectorService);

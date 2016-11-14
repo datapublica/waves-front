@@ -1,7 +1,7 @@
 var rdf: RDF = require("rdf-ext");
 
 /**
- * The homepage controller for the app. The controller:
+ * The s1i controller for the app. The controller:
  * - display a <hello world> message
  */
 export class MonitoringController {

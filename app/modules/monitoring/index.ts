@@ -1,5 +1,5 @@
 /**
- * Homepage Component
+ * Monitoring Component
  */
 
 /**
@@ -11,6 +11,6 @@ import {config as MonitoringRouting} from './MonitoringRouting'
 /**
  * Stylesheet
  */
-angular.module('app.homepage', ["ui.router"])
+angular.module('app.monitoring', ["ui.router"])
     .config(MonitoringRouting)
     .controller('MonitoringController', MonitoringController);

@@ -1,23 +1,23 @@
 import 'angular';
 import 'angular-mocks';
 import '../../services'
-import {HomepageController} from './HomepageController';
-import {HomeService} from "../../services/HomeService";
+import {S1iController} from './S1iController';
+import {SectorService} from "../../services/SectorService";
 
-describe("Homepage", () =>{
+describe("S1i", () =>{
     var $httpBackend: ng.IHttpBackendService,
         $controller: ng.IControllerService,
-        ctrl: HomepageController;
+        ctrl: S1iController;
 
     beforeEach(() => {
         angular.mock.module('app.services')
     });
 
     beforeEach(() => {
-        angular.mock.inject(function (_$httpBackend_: ng.IHttpBackendService, _$controller_: ng.IControllerService, _HomeService_: HomeService) {
+        angular.mock.inject(function (_$httpBackend_: ng.IHttpBackendService, _$controller_: ng.IControllerService, _SectorService_: SectorService) {
             $httpBackend = _$httpBackend_;
             $controller = _$controller_;
-            ctrl = $controller(HomepageController, {HomeService: _HomeService_});
+            ctrl = $controller(S1iController, {SectorService: _SectorService_});
         })
     });
 

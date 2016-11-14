@@ -1,5 +1,5 @@
 import IHttpPromise = angular.IHttpPromise;
-export class HomeService {
+export class SectorService {
     private http:ng.IHttpService;
     private log:ng.ILogService;
 
