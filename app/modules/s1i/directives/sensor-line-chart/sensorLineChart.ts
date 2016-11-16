@@ -9,7 +9,7 @@ interface sensorLineChartDirectiveScope extends ng.IScope
     addValue: Function;
 }
 
-@directive()
+@directive('$filter')
 export class sensorLineChartDirective implements ng.IDirective {
     
     public scope:any;
@@ -17,7 +17,7 @@ export class sensorLineChartDirective implements ng.IDirective {
     
     private $scope;
     
-    constructor() {
+    constructor($filter: ng.IFilterService) {
         
         this.scope = {
             latestValue: '=',
@@ -83,11 +83,26 @@ export class sensorLineChartDirective implements ng.IDirective {
             var zeroLine = svg.append("svg:line")
             .attr("x1", 0)
             .attr("x2", width)
-            .attr("y1", 0)
-            .attr("y2", 0)
+            .attr("y1", height)
+            .attr("y2", height)
             .attr('class', 'zero-line')
             .style("stroke-width", "0.5")
             .style("stroke", "rgb(143, 215, 236)");
+            
+            var zeroLabel = svg.append("svg:text")
+            .text("0")
+            .attr("x", -20)
+            .attr("y", height + 5 )
+            .style("fill", "rgb(143, 215, 236)")
+            .style("font-size", "12px");
+            
+            var lastValueLabel = svg.append("svg:text")
+            .attr("x", width)
+            .attr("y", 20)
+            .attr("text-anchor", "end")
+            .style("fill", "rgb(143, 215, 236)")
+            .style("font-weight", "bold")
+            .style("font-size", "25px");
     
             var axis = svg.append('g')
             .attr('class', 'x axis')
@@ -166,6 +181,15 @@ export class sensorLineChartDirective implements ng.IDirective {
                 .ease('linear')
                 .attr("y1", y(0))
                 .attr("y2", y(0));
+    
+                zeroLabel
+                .transition()
+                .duration(duration)
+                .ease('linear')
+                .attr("y", y(0) + 5);
+    
+                lastValueLabel
+                .text($filter('number')(value,2) + ' m³ / h');
         
                 // Remove oldest data point from each group
                 data.current.data.shift();
