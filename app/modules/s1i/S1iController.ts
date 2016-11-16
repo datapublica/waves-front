@@ -8,8 +8,10 @@ export class S1iController {
     public units: any[];
     public selectedUnit: any;
     public selectUnit: Function;
+    public selectedView: any;
+    public selectView: Function;
     public latestValue: any;
-    private data: any;
+    public views: any[];
     
     constructor($location: ng.ILocationService, $timeout: ng.ITimeoutService, $state:ng.ui.IStateService, context: any, data: any) {
         "ngInject";
@@ -19,8 +21,10 @@ export class S1iController {
         var extractAfterSharp = (str: string) => {
             return str.substring(str.indexOf("#") + 1);
         };
-        
+    
         var data = data.data;
+    
+        ctrl.views = ['Map', 'Line Charts'];
     
         ctrl.units = [
             {
@@ -42,6 +46,7 @@ export class S1iController {
          ];
         
         ctrl.selectedUnit = $location.search()['unit'] || ctrl.units[1].name;
+        ctrl.selectedView = $location.search()['view'] || ctrl.views[0];
         var unitObject = ctrl.units.filter(u => u.name === ctrl.selectedUnit)[0];
         if(!unitObject){
             // If user changes the url manually
@@ -54,10 +59,14 @@ export class S1iController {
         ctrl.selectUnit = () => {
             $location.search('unit', ctrl.selectedUnit);
         };
+        
+        ctrl.selectView = () => {
+            $location.search('view', ctrl.selectedView);
+        };
 
         ctrl.sensors = context.data['@graph'] && context.data['@graph'].filter(s =>
             s['@type'] === 'http://purl.oclc.org/NET/ssnx/ssn#Sensor' && extractAfterSharp(s['http://data.nasa.gov/qudt/owl/qudt#unit']['@id']) === unitId
-        );
+        ) || [];
         ctrl.sensors.forEach((sensor) => {unitDic[sensor['@id']] = sensor['http://data.nasa.gov/qudt/owl/qudt#unit']['@id']});
     
         // WebSocket

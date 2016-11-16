@@ -2,6 +2,16 @@
     <div flex="33">
         <div data-layout="row">
             <md-input-container flex="100">
+                <label>Visualization</label>
+                <md-select ng-model="S1i.selectedView" ng-change="S1i.selectView()">
+                    <md-option ng-repeat="view in S1i.views">
+                        {{view}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div data-layout="row">
+            <md-input-container flex="100">
                 <label>Unit</label>
                 <md-select ng-model="S1i.selectedUnit" ng-change="S1i.selectUnit()">
                     <md-option ng-repeat="unit in S1i.units">
@@ -12,6 +22,13 @@
         </div>
     </div>
     <div flex="66">
-        <sensors-map map-points="S1i.sensors" latest-value="S1i.latestValue"></sensors-map>
+        <sensors-map map-points="S1i.sensors" latest-value="S1i.latestValue" ng-if="S1i.selectedView === 'Map'"></sensors-map>
+        <div ng-if="S1i.selectedView === 'Line Charts'">
+            <h4>Line charts</h4>
+            <div ng-repeat="sensor in S1i.sensors | orderBy:'name'">
+                <h5>{{sensor["rdfs:label"]}}</h5>
+                <sensor-line-chart sensor="sensor" latest-value="S1i.latestValue"></sensor-line-chart>
+            </div>
+        </div>
     </div>
 </div>

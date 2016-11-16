@@ -1,0 +1,27 @@
+sensor-line-chart {
+  display: block;
+  width: 100%;
+  .chart {
+    overflow: visible;
+    .axis {
+      stroke-width: 1;
+      .tick {
+        text {
+          fill: black;
+          font-size: 0.7em;
+        }
+        line {
+          stroke: black;
+        }
+      }
+      .domain {
+        fill: none;
+        stroke: black;
+      }
+    }
+    .group {
+      fill: none;
+      stroke: black;
+    }
+  }
+}
