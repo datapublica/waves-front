@@ -67,6 +67,7 @@ export class SensorsMapDirective implements ng.IDirective {
     private processColorScale:Function = (latestValue):void => {
         this.markersArray.forEach(marker => {
             if(marker.options.point['@id'] === latestValue.sensor){
+                marker.options.point.lastValue = marker.options.point.value;
                 marker.options.point.value = parseInt(latestValue.newValue, 10);
             }
             var value = marker.options.point.value;
@@ -88,6 +89,11 @@ export class SensorsMapDirective implements ng.IDirective {
             var markerLabel = marker.options.point['rdfs:label'];
             if(angular.isDefined(markerValue)){
                 marker.setStyle({fillColor: this.COLOR_SCALE(markerValue), color: this.COLOR_SCALE(markerValue)});
+                if (angular.isDefined(marker.options.point.value) && angular.isDefined(marker.options.point.lastValue) && this.max !== this.min) {
+                    var diffRatio = Math.abs((marker.options.point.value - marker.options.point.lastValue) / (this.max - this.min));
+                    var pointSize = Math.max(diffRatio * 1200, 200);
+                    marker.setRadius(pointSize);
+                }
                 marker.bindPopup(markerLabel + ' : ' + markerValue + ' ' + latestValue.unit);
             } else {
                 marker.bindPopup(markerLabel);
