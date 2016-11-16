@@ -3,5 +3,8 @@ sensors-map {
   .sensors-map {
     height: 600px;
     width: 100%;
+    path {
+      transition: 1s;
+    }
   }
 }

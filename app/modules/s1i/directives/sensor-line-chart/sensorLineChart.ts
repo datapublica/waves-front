@@ -80,6 +80,15 @@ export class sensorLineChartDirective implements ng.IDirective {
             .attr('width', width)
             .attr('height', height + 50);
     
+            var zeroLine = svg.append("svg:line")
+            .attr("x1", 0)
+            .attr("x2", width)
+            .attr("y1", 0)
+            .attr("y2", 0)
+            .attr('class', 'zero-line')
+            .style("stroke-width", "0.5")
+            .style("stroke", "rgb(143, 215, 236)");
+    
             var axis = svg.append('g')
             .attr('class', 'x axis')
             .attr('transform', 'translate(0,' + height + ')')
@@ -91,12 +100,15 @@ export class sensorLineChartDirective implements ng.IDirective {
             .data([data.current.data])
             .attr('class', 'current group')
             .style('stroke', data.current.color);
+    
+            var points = [];
 
             function tick(value) {
                 now = new Date().getTime();
+                var entry = {value, date: now};
         
                 // Add new values
-                data.current.data.push(value); // Real values arrive at irregular intervals
+                data.current.data.push(entry.value); // Real values arrive at irregular intervals
                 min = Math.min(...data.current.data);
                 max = Math.max(...data.current.data);
                 if(min === max){
@@ -107,6 +119,19 @@ export class sensorLineChartDirective implements ng.IDirective {
                 
                 // update the y domain
                 y.domain([min, max]);
+                
+                points.push(entry);
+    
+                // var point = svg
+                // .append('circle')
+                // .attr("r", 3.5)
+                // .attr('class', 'point')
+                // .attr("cx", function() {
+                //     return x(entry.date - duration)
+                // })
+                // .attr("cy", function() {
+                //     return y(entry.value)
+                // });
         
                 // Shift domain
                 x.domain([now - (limit - 2) * duration, now - duration]);
@@ -116,13 +141,31 @@ export class sensorLineChartDirective implements ng.IDirective {
                 .duration(duration)
                 .ease('linear')
                 .call(x.axis);
+                
+                svg.selectAll('.point')
+                .transition()
+                .duration(duration)
+                .ease('linear')
+                .attr("cx", function(d,i) {
+                    return x(points[i].date)
+                })
+                .attr("cy", function(d,i) {
+                    return y(points[i].value)
+                });
         
                 // Slide paths left
                 paths.attr('transform', null)
                 .transition()
                 .duration(duration)
                 .ease('linear')
-                .attr('transform', 'translate(' + x(now - (limit - 1) * duration) + ')');
+                .attr('transform', 'translate(' + x(points[points.length -1].date - (limit - 1) * duration) + ')');
+    
+                zeroLine
+                .transition()
+                .duration(duration)
+                .ease('linear')
+                .attr("y1", y(0))
+                .attr("y2", y(0));
         
                 // Remove oldest data point from each group
                 data.current.data.shift();
