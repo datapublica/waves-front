@@ -5,6 +5,7 @@ interface RDF {
     BlankNode?: BlankNode;
     Literal?: Literal;
     Graph?: Graph;
+    TripletGraph?: Graph;
 
     Profile?: Profile;
     RDFEnvironment?: RDFEnvironment;

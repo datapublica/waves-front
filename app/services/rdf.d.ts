@@ -6,14 +6,14 @@ interface Triple {
 }
 
 interface Graph extends Array<Triple> {
-    new () : Graph;
+    new (init?: Array<Triple>) : Graph;
 	length: number;
 	actions: TripleAction[];
 	add(triple: Triple): Graph;
 	remove(triple: Triple): Graph;
 	removeMatches(subject: any, predicate: any, object: any): Graph;
 	toArray(): Triple[];
-	match(subject: any, predicate: any, object: any, limit?: number): Graph;
+	match(subject: any, predicate: any, object: any, limit?: number): Array<Triple>;
 	merge(graph: Graph): Graph;
 	addAll(graph: Graph): Graph;
 	addAction(action: TripleAction, run?: boolean): Graph;
