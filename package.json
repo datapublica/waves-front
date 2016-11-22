@@ -15,6 +15,7 @@
     "bufferutil": "^1.2.1",
     "d3": "3.5.16",
     "fs": "0.0.2",
+    "klayjs-d3": "^0.3.6",
     "leaflet": "^1.0.1",
     "leaflet.markercluster": "^1.0.0",
     "tls": "0.0.1",

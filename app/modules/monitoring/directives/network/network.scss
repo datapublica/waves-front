@@ -1,0 +1,37 @@
+.network {
+  width: 100%;
+  height: 100%;
+
+  g.leaf > rect {
+    stroke-width: .5px;
+  }
+
+  g.leaf > text {
+    fill: black;
+  }
+
+  g.compound > rect {
+    opacity: 1;
+    fill: rgba(0,0,0,0);
+    stroke: black;
+    stroke-width: .5px;
+    &.port {
+      stroke: none;
+      opacity: 1;
+      fill: black;
+    }
+  }
+  g.root > rect {
+    opacity: 0;
+  }
+
+  .node {
+  }
+
+  .link {
+    stroke: black;
+    stroke-opacity: 1;
+    fill: none;
+  }
+
+}

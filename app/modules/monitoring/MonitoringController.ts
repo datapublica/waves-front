@@ -17,21 +17,40 @@ let resolve = function (g: Graph, property: string, mapping?: (RDFNode) => any):
     return g.match(null, property, null).map(x => mapping(x.object));
 };
 
-class Unit {
+class RDFObject {
     public uri: string;
+    public path: string;
+
+    constructor(node: RDFNode, objects: Object) {
+        this.uri = node.toString();
+        this.path = this.uri.replace(new RegExp("https?://[^/]*"), "");
+        objects[this.uri] = this;
+    }
+
+    asNode(): any {
+        return {
+            "id": this.uri,
+            "data": this
+        }
+    }
+
+    toString(): string {
+        return this.uri+"";
+    }
+}
+
+export class Unit extends RDFObject {
     public unitReferences: string;
     public mappings: string;
 
     constructor(node: RDFNode, g: Graph, objects: Object) {
-        this.uri = node.toString();
-        objects[this.uri] = this;
+        super(node, objects);
         this.unitReferences = resolveOne(g, URI_WAVES+"unitReferences");
         this.mappings = resolveOne(g, URI_WAVES+"mappings");
     }
 }
 
-class Converter {
-    public uri: string;
+export class Converter extends RDFObject {
     public label: string;
     public model: string;
     public location: string;
@@ -39,8 +58,7 @@ class Converter {
     public query: string;
 
     constructor(node: RDFNode, g: Graph, all: Graph, objects: Object) {
-        this.uri = node.toString();
-        objects[this.uri] = this;
+        super(node, objects);
         this.label = resolveOne(g, URI_RDFS+"label");
         this.model = resolveOne(g, URI_WAVES+"model");
         this.location = resolveOne(g, URI_WAVES+"location");
@@ -50,42 +68,33 @@ class Converter {
 
 }
 
-class DataStream {
-    public uri: string;
+export class DataStream extends RDFObject {
     public label: string;
     public converter: Converter;
     public id: Number;
 
     constructor(node: RDFNode, g: Graph, all: Graph, objects: Object) {
-        this.uri = node.toString();
-        objects[this.uri] = this;
+        super(node, objects);
         this.label = resolveOne(g, URI_RDFS+"label");
         this.id = resolveOne(g, URI_WAVES+"id", x => parseInt(x.toString()));
         this.converter = resolveOne(g, URI_WAVES+"converter", x => new Converter(x, new rdf.Graph(all.match(x, null, null)), all, objects));
     }
-
-    toString(): string {
-        return this.id+"";
-    }
 }
 
-class StreamWindow {
-    public uri: string;
+export class StreamWindow extends RDFObject {
     public stream: string;
     public windowSpan: string;
     public label: string;
 
     constructor(node: RDFNode, g: Graph, objects: Object) {
-        this.uri = node.toString();
-        objects[this.uri] = this;
+        super(node, objects);
         this.label = resolveOne(g, URI_RDFS+"label");
         this.stream = resolveOne(g, URI_WAVES+"stream");
         this.windowSpan = resolveOne(g, URI_WAVES+"windowSpan");
     }
 }
 
-class StaticFeed {
-    public uri: string;
+export class StaticFeed extends RDFObject {
     public label: string;
     public feedType: string;
     public location: string;
@@ -93,8 +102,7 @@ class StaticFeed {
     public query: string;
 
     constructor(node: RDFNode, g: Graph, objects: Object) {
-        this.uri = node.toString();
-        objects[this.uri] = this;
+        super(node, objects);
         this.label = resolveOne(g, URI_RDFS+"label");
         this.feedType = resolveOne(g, URI_WAVES+"feedType");
         this.location = resolveOne(g, URI_WAVES+"location");
@@ -103,8 +111,7 @@ class StaticFeed {
     }
 }
 
-class Filter {
-    public uri: string;
+export class Filter extends RDFObject {
     public label: string;
     public consumesStreams: Array<StreamWindow>;
     public producesStream: string;
@@ -113,7 +120,7 @@ class Filter {
     public staticFeed: StaticFeed;
 
     constructor(node: RDFNode, g: Graph, all: Graph, objects: Object) {
-        this.uri = node.toString();
+        super(node, objects);
         this.label = resolveOne(g, URI_RDFS+"label");
         this.producesStream = resolveOne(g, URI_WAVES+"producesStream");
         this.consumesStreams = resolve(g, URI_WAVES+"consumesStream", x => new StreamWindow(x, new rdf.Graph(all.match(x, null, null)), objects));
@@ -142,11 +149,5 @@ export class MonitoringController {
 
         self.streams = graph.match(null, RDF_TYPE, URI_WAVES + "Stream").map(it => new DataStream(it.subject, new rdf.Graph(graph.match(it.subject, null, null)), graph, self.objects));
         self.filters = graph.match(null, RDF_TYPE, URI_WAVES + "Filter").map(it => new Filter(it.subject, new rdf.Graph(graph.match(it.subject, null, null)), graph, self.objects));
-
-        // self.filters = graph.match(null, null, URI_WAVES + "Filter").map(it => graph.match(it.subject, null, null));
-
-        // self.filters.forEach(f => {
-        //     f.match(null, URI_WAVES+"consumesStream", null).forEach();
-        // });
     }
 }
