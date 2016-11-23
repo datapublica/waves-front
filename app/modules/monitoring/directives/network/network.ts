@@ -6,6 +6,7 @@ var klay: any = require('klayjs-d3');
 import './network.scss';
 import {Filter} from "../../MonitoringController";
 import {DataStream} from "../../MonitoringController";
+import Line = d3.svg.Line;
 
 interface NetworkDirectiveScope extends ng.IScope {
     streams: DataStream[];
@@ -281,6 +282,41 @@ export class NetworkDirective implements ng.IDirective {
                 .attr("font-size", "7px")
                 .attr("dy", "7px")
                 .attr("dx", 2);
+
+            let toUpdate = baseNodes.append("g")
+                .attr("transform", "translate(5,10)");
+
+            let plotHeight = 25;
+            let plotWidth = 70;
+            toUpdate.append("rect")
+                .attr("fill", "white")
+                .attr("width", plotWidth)
+                .attr("height", plotHeight);
+
+            var pathFromData = function (points: number[]) : any {
+                let max = Math.max(points.reduce((a,b) => Math.max(a,b)), 10);
+                return points.map((e,i) => [(plotWidth*i/points.length), (plotHeight - plotHeight*(e)/(max))]);
+            };
+
+            var lineFunction = d3.svg.line()
+                .interpolate("basis")
+                .x(function (d:number[]) {
+                    return d[0];
+                })
+                .y(function (d:number[]) {
+                    return d[1];
+                });
+            var randomData = function (min, max, n) {
+                var res = Array(n);
+                for(var i = 0 ; i < n ; i++)
+                    res[i] = Math.random()*(max-min)+min;
+                return res;
+            };
+            toUpdate.append("path")
+                .attr("stroke", "red")
+                .attr("stroke-width", "1px")
+                .attr("fill", "none")
+                .attr("d", () => lineFunction(pathFromData(randomData(12, 53, 15))));
 
             node.filter(x => x.children)
                 .append("rect")
