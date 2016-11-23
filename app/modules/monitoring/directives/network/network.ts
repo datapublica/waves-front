@@ -2,6 +2,13 @@ import {directive} from "./../../../../decorators/directive";
 
 var klay: any = require('klayjs-d3');
 
+let NODE_WIDTH = 200;
+let NODE_HEIGHT = 80;
+let FONT_SIZE = "10px";
+let PLOT_HEIGHT = 60;
+let PLOT_WIDTH = 150;
+let MARKER_SIZE = 15;
+
 // Directive stylesheet
 import './network.scss';
 import {Filter} from "../../MonitoringController";
@@ -157,12 +164,12 @@ export class NetworkDirective implements ng.IDirective {
 
         gr.children.forEach(x => {
             // compute node size
-            x.width = 100;
-            x.height = 40;
+            x.width = NODE_WIDTH;
+            x.height = NODE_HEIGHT;
             if (x.children) {
                 x.children.forEach(c => {
-                    c.width = 100;
-                    c.height = 40;
+                    c.width = NODE_WIDTH;
+                    c.height = NODE_HEIGHT;
                 });
             }
         });
@@ -192,8 +199,8 @@ export class NetworkDirective implements ng.IDirective {
             .attr("viewBox", "0 0 10 10")
             .attr("refX", 0)
             .attr("refY", 3)
-            .attr("markerWidth", 10)        // marker settings
-            .attr("markerHeight", 6)
+            .attr("markerWidth", MARKER_SIZE)        // marker settings
+            .attr("markerHeight", MARKER_SIZE/2 + 1)
             .attr("orient", "auto")
             .attr("markerUnits", "strokeWidth")
             .append("svg:path")
@@ -279,23 +286,21 @@ export class NetworkDirective implements ng.IDirective {
                 .text(function (d: any) {
                     return d.label;
                 })
-                .attr("font-size", "7px")
-                .attr("dy", "7px")
+                .attr("font-size", FONT_SIZE)
+                .attr("dy", FONT_SIZE)
                 .attr("dx", 2);
 
             let toUpdate = baseNodes.append("g")
-                .attr("transform", "translate(5,10)");
+                .attr("transform", "translate(5,"+(NODE_HEIGHT-PLOT_HEIGHT-5)+")");
 
-            let plotHeight = 25;
-            let plotWidth = 70;
             toUpdate.append("rect")
                 .attr("fill", "white")
-                .attr("width", plotWidth)
-                .attr("height", plotHeight);
+                .attr("width", PLOT_WIDTH)
+                .attr("height", PLOT_HEIGHT);
 
             var pathFromData = function (points: number[]) : any {
                 let max = Math.max(points.reduce((a,b) => Math.max(a,b)), 10);
-                return points.map((e,i) => [(plotWidth*i/points.length), (plotHeight - plotHeight*(e)/(max))]);
+                return points.map((e,i) => [(PLOT_WIDTH*i/points.length), (PLOT_HEIGHT - PLOT_HEIGHT*(e)/(max))]);
             };
 
             var lineFunction = d3.svg.line()
@@ -354,7 +359,7 @@ export class NetworkDirective implements ng.IDirective {
                         (d.bendPoints || []).forEach(function (bp, i) {
                             path += "L" + bp.x + " " + bp.y + " ";
                         });
-                        path += "L" + (d.targetPoint.x - 6) + " " + d.targetPoint.y + " ";
+                        path += "L" + (d.targetPoint.x - MARKER_SIZE/2 - 1) + " " + d.targetPoint.y + " ";
                     }
                     return path;
                 });
