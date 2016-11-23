@@ -4,10 +4,27 @@ var klay: any = require('klayjs-d3');
 
 let NODE_WIDTH = 200;
 let NODE_HEIGHT = 80;
-let FONT_SIZE = "10px";
+let FONT_SIZE = 10;
 let PLOT_HEIGHT = 60;
-let PLOT_WIDTH = 150;
+let PLOT_WIDTH = 125;
 let MARKER_SIZE = 15;
+
+
+var pathFromData = function (points: number[], update?: boolean): any {
+    let max = Math.max(points.reduce((a, b) => Math.max(a, b)), 10);
+    return points.map((e, i) => [(PLOT_WIDTH * (update ? i + 1 : i) / points.length), (PLOT_HEIGHT - PLOT_HEIGHT * (e) / (max))]);
+};
+
+var lineInterpolation = d3.svg.line()
+    .interpolate("basis")
+    .x(function (d: number[]) {
+        return d[0];
+    })
+    .y(function (d: number[]) {
+        return d[1];
+    });
+
+var lineFunction = (points: number[], update?: boolean) => lineInterpolation(pathFromData(points, update));
 
 // Directive stylesheet
 import './network.scss';
@@ -18,9 +35,12 @@ import Line = d3.svg.Line;
 interface NetworkDirectiveScope extends ng.IScope {
     streams: DataStream[];
     filters: Filter[];
+    networkStatus: any;
+    metricUnits: any;
+    metricSelection: any;
 }
 
-@directive()
+@directive('$filter')
 export class NetworkDirective implements ng.IDirective {
 
     public scope: any;
@@ -31,13 +51,19 @@ export class NetworkDirective implements ng.IDirective {
     private graph: any;
     private element: HTMLElement;
 
-    constructor() {
+    private numberFilter: ng.IFilterNumber;
 
+    constructor($filter: ng.IFilterService) {
+        "ngInject";
         this.scope = {
             streams: '=',
-            filters: '='
+            filters: '=',
+            networkStatus: '=',
+            metricUnits: '=',
+            metricSelection: '='
         };
 
+        this.numberFilter = $filter("number");
         this.template = <string>require('./network.html');
         this.link = ($scope: NetworkDirectiveScope, element: HTMLElement[]): void => {
             this.$scope = $scope;
@@ -45,7 +71,21 @@ export class NetworkDirective implements ng.IDirective {
 
             // Init and draw the default map
             this.createGraph($scope.streams, $scope.filters);
-            this.createLayout();
+            this.createLayout($scope.networkStatus, $scope.metricSelection);
+
+            $scope.$watch('networkStatus', (n, o) => {
+                if (n != o) {
+                    this.update($scope.networkStatus, $scope.metricSelection);
+                }
+            });
+            var init = 1;
+            $scope.$watch('metricSelection', () => {
+                if (init) {
+                    init = 0;
+                    return;
+                }
+                this.update($scope.networkStatus, $scope.metricSelection);
+            }, true);
         }
     }
 
@@ -66,10 +106,10 @@ export class NetworkDirective implements ng.IDirective {
                 gr.children.push({
                     "id": x.converter.uri,
                     "data": x.converter,
-                    "label": "<converter "+x.converter.label+">"
+                    "label": "<converter " + x.converter.label + ">"
                 });
                 gr.edges.push({
-                    "id": x.uri+":"+x.converter.uri,
+                    "id": x.uri + ":" + x.converter.uri,
                     "target": x.uri,
                     "source": x.converter.uri
                 });
@@ -114,10 +154,10 @@ export class NetworkDirective implements ng.IDirective {
                 r.children.push({
                     "id": x.staticFeed.uri,
                     "data": x.staticFeed,
-                    "label": "<static feed "+x.staticFeed.label+">"
+                    "label": "<static feed " + x.staticFeed.label + ">"
                 });
                 r.edges.push({
-                    "id": x.staticFeed.uri+":"+x.uri,
+                    "id": x.staticFeed.uri + ":" + x.uri,
                     "source": x.staticFeed.uri,
                     "target": x.uri
                 })
@@ -130,7 +170,7 @@ export class NetworkDirective implements ng.IDirective {
                 r.children.push({
                     "id": win.uri,
                     "data": win,
-                    "label": "<window "+win.windowSpan+">"
+                    "label": "<window " + win.windowSpan + ">"
                 });
 
                 r.ports.push({
@@ -176,8 +216,8 @@ export class NetworkDirective implements ng.IDirective {
         this.graph = gr;
     }
 
-    private createLayout() {
-
+    private createLayout(networkStatus: any, selectedMetric: any) {
+        var self = this;
         var zoom = d3.behavior.zoom()
             .on("zoom", () => {
                 svg.attr("transform", "translate(" + d3.event['translate'] + ")"
@@ -193,14 +233,12 @@ export class NetworkDirective implements ng.IDirective {
         let defs = svg.append("svg:defs");
         defs
             .append("svg:marker")
-            //markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto" markerUnits="strokeWidth" viewBox="0 0 20 20">
-            // <path d="M0,0 L0,6 L9,3 z"
             .attr("id", "end")
             .attr("viewBox", "0 0 10 10")
             .attr("refX", 0)
             .attr("refY", 3)
             .attr("markerWidth", MARKER_SIZE)        // marker settings
-            .attr("markerHeight", MARKER_SIZE/2 + 1)
+            .attr("markerHeight", MARKER_SIZE / 2 + 1)
             .attr("orient", "auto")
             .attr("markerUnits", "strokeWidth")
             .append("svg:path")
@@ -212,7 +250,6 @@ export class NetworkDirective implements ng.IDirective {
             .attr("x2", "100%")
             .attr("y1", "0%")
             .attr("y2", "100%");
-             // x1="0%" y1="0%" x2="100%" y2="0%";
         gradient
             .append("svg:stop")
             .attr("stop-opacity", 0.902)
@@ -273,7 +310,7 @@ export class NetworkDirective implements ng.IDirective {
                 .attr("fill", "url(#boxGradient)")
                 .attr("rx", 3)
                 .attr("ry", 3)
-                .attr("stroke", (d:any) => {
+                .attr("stroke", (d: any) => {
                     if (d.data instanceof DataStream) {
                         return "blue";
                     } else if (d.data instanceof Filter) {
@@ -290,38 +327,61 @@ export class NetworkDirective implements ng.IDirective {
                 .attr("dy", FONT_SIZE)
                 .attr("dx", 2);
 
+            baseNodes.append("text")
+                .text(function (d: any) {
+                    return selectedMetric[d.id];
+                })
+                .attr("class", "monitoring-selected-metric")
+                .attr("cursor", "pointer")
+                .attr("font-size", FONT_SIZE)
+                .attr("dy", FONT_SIZE)
+                .attr("text-anchor", "end")
+                .attr("dx", NODE_WIDTH-2)
+                .on("click", function (d: any) {
+                    // new metric
+                    self.$scope.$apply(() => {
+                        var current = selectedMetric[d.id];
+                        var allMetrics = Object.keys(self.$scope.metricUnits);
+                        selectedMetric[d.id] = allMetrics[(allMetrics.indexOf(current)+1)%allMetrics.length];
+                    });
+                });
+
+            function createMetricAgg(agg: string, i: number) {
+                baseNodes.append("text")
+                    .text(function (d: any) {
+                        return self.numberFilter(networkStatus[d.id][selectedMetric[d.id]].aggregates[agg], 1) + " " + self.$scope.metricUnits[selectedMetric[d.id]];
+                    })
+                    .attr("class", "monitoring-metric-"+(agg.replace("%", "")))
+                    .attr("font-size", FONT_SIZE-1)
+                    .attr("dy", (FONT_SIZE + 1) * i)
+                    .attr("text-anchor", "end")
+                    .attr("dx", NODE_WIDTH-5);
+                baseNodes.append("text")
+                    .text(agg+":")
+                    .attr("font-size", FONT_SIZE-1)
+                    .attr("dy", (FONT_SIZE + 1) * i)
+                    .attr("dx", PLOT_WIDTH+10);
+            }
+
+            createMetricAgg("min", 2);
+            createMetricAgg("avg", 3);
+            createMetricAgg("95%", 4);
+            createMetricAgg("max", 5);
+
             let toUpdate = baseNodes.append("g")
-                .attr("transform", "translate(5,"+(NODE_HEIGHT-PLOT_HEIGHT-5)+")");
+                .attr("transform", "translate(5," + (NODE_HEIGHT - PLOT_HEIGHT - 5) + ")");
 
             toUpdate.append("rect")
                 .attr("fill", "white")
                 .attr("width", PLOT_WIDTH)
                 .attr("height", PLOT_HEIGHT);
 
-            var pathFromData = function (points: number[]) : any {
-                let max = Math.max(points.reduce((a,b) => Math.max(a,b)), 10);
-                return points.map((e,i) => [(PLOT_WIDTH*i/points.length), (PLOT_HEIGHT - PLOT_HEIGHT*(e)/(max))]);
-            };
-
-            var lineFunction = d3.svg.line()
-                .interpolate("basis")
-                .x(function (d:number[]) {
-                    return d[0];
-                })
-                .y(function (d:number[]) {
-                    return d[1];
-                });
-            var randomData = function (min, max, n) {
-                var res = Array(n);
-                for(var i = 0 ; i < n ; i++)
-                    res[i] = Math.random()*(max-min)+min;
-                return res;
-            };
             toUpdate.append("path")
+                .attr("class", "monitoring-plot")
                 .attr("stroke", "red")
                 .attr("stroke-width", "1px")
                 .attr("fill", "none")
-                .attr("d", () => lineFunction(pathFromData(randomData(12, 53, 15))));
+                .attr("d", (d: any) => lineFunction(networkStatus[d.id][selectedMetric[d.id]].latestPoints, false));
 
             node.filter(x => x.children)
                 .append("rect")
@@ -359,12 +419,34 @@ export class NetworkDirective implements ng.IDirective {
                         (d.bendPoints || []).forEach(function (bp, i) {
                             path += "L" + bp.x + " " + bp.y + " ";
                         });
-                        path += "L" + (d.targetPoint.x - MARKER_SIZE/2 - 1) + " " + d.targetPoint.y + " ";
+                        path += "L" + (d.targetPoint.x - MARKER_SIZE / 2 - 1) + " " + d.targetPoint.y + " ";
                     }
                     return path;
                 });
 
         });
         layouter.kgraph(this.graph);
+    }
+
+    private update(networkStatus: any, selectedMetric: any) {
+        let self = this;
+        let svg = d3.select(this.element);
+        svg.selectAll(".monitoring-plot")
+            .attr("d", (d: any) => lineFunction(networkStatus[d.id][selectedMetric[d.id]].latestPoints, true))
+            .transition()
+            .duration(1000)
+            .attr("transform", (d: any) => "translate(" + (-PLOT_WIDTH / networkStatus[d.id][selectedMetric[d.id]].latestPoints.length) + ",0)")
+            .transition()
+            .duration(0)
+            .attr("transform", null)
+            .attr("d", (d: any) => lineFunction(networkStatus[d.id][selectedMetric[d.id]].latestPoints, false));
+        svg.selectAll(".monitoring-selected-metric")
+            .text((d:any) => selectedMetric[d.id]);
+        ["95%", "avg", "min", "max"].forEach(agg => {
+            svg.selectAll(".monitoring-metric-"+agg.replace("%", ""))
+                .text(function (d: any) {
+                    return self.numberFilter(networkStatus[d.id][selectedMetric[d.id]].aggregates[agg], 1) + " " + self.$scope.metricUnits[selectedMetric[d.id]];
+                });
+        });
     }
 }

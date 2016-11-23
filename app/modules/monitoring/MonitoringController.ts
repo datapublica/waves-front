@@ -1,3 +1,4 @@
+import {MonitoringService} from "../../services/MonitoringService";
 var rdf: RDF = require("rdf");
 
 let URI_WAVES = "http://www.waves-rsp.org/configuration#";
@@ -140,8 +141,11 @@ export class MonitoringController {
     streams: DataStream[];
     objects: Object;
     filters: Filter[];
+    metricUnits: any;
+    networkStatus: any;
+    metricSelection: Object = {};
 
-    constructor($scope: ng.IScope, graph: Graph) {
+    constructor($scope: ng.IScope, graph: Graph, networkStatus: any, metricUnits: any, MonitoringService: MonitoringService, $interval: ng.IIntervalService) {
         "ngInject";
         var self = this;
         self.graph = graph;
@@ -149,5 +153,14 @@ export class MonitoringController {
 
         self.streams = graph.match(null, RDF_TYPE, URI_WAVES + "Stream").map(it => new DataStream(it.subject, new rdf.Graph(graph.match(it.subject, null, null)), graph, self.objects));
         self.filters = graph.match(null, RDF_TYPE, URI_WAVES + "Filter").map(it => new Filter(it.subject, new rdf.Graph(graph.match(it.subject, null, null)), graph, self.objects));
+        self.networkStatus = networkStatus;
+        self.metricUnits = metricUnits;
+        let defaultMetric = "throughput";
+        Object.keys(self.networkStatus).forEach(uri => self.metricSelection[uri] = defaultMetric);
+
+        let promise = $interval(() => self.networkStatus = MonitoringService.getNetworkStatus(), 2000);
+        $scope.$on('$destroy', function() {
+            $interval.cancel(promise);
+        });
     }
 }
