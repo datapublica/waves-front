@@ -27,8 +27,6 @@ import './modules/s1i';
 import './modules/monitoring';
 import './components';
 
-import './assets/data/data.json';
-
 /**
  * The main app module.
  */
