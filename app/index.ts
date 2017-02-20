@@ -24,6 +24,7 @@ import './services';
 import './modules/main';
 import './modules/s3f';
 import './modules/s1i';
+import './modules/dashboard';
 import './modules/monitoring';
 import './components';
 
@@ -39,6 +40,7 @@ module app {
             "app.components",
             "app.services",
             "app.main",
+            "app.dashboard",
             "app.monitoring",
             "app.s1i",
             "app.s3f"

@@ -1,6 +1,6 @@
 import {MonitoringService} from "../../services/MonitoringService";
-var N3Parser:any = require('rdf-parser-n3');
-var rdf = <RDF>require("rdf");
+let N3Parser:any = require('rdf-parser-n3');
+let rdf = <RDF>require("rdf");
 
 
 /**
@@ -20,7 +20,7 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
         controllerAs: 'Monitoring',
         resolve: {
             graph: () => {
-                var graph = new rdf.Graph();
+                let graph = new rdf.Graph();
                 return N3Parser.process(require("../../assets/data/topo.trig"), (t) => graph.add(t)).then(function() {
                     return graph;
                 });

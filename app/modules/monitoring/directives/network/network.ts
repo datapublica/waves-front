@@ -1,4 +1,4 @@
-import {directive} from "./../../../../decorators/directive";
+import {directive} from "../../../../decorators/directive";
 
 var klay: any = require('klayjs-d3');
 

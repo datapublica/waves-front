@@ -3,5 +3,5 @@ export function config($urlRouterProvider: ng.ui.IUrlRouterProvider, $locationPr
     if (ON_PROD) {
         $locationProvider.html5Mode(true);
     }
-    $urlRouterProvider.otherwise('/overview');
+    $urlRouterProvider.otherwise('/dashboard');
 }

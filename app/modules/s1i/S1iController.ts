@@ -1,5 +1,3 @@
-
-import {parse} from "uglify-js";
 /**
  * The s1i controller for the app
  */
