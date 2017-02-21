@@ -1,0 +1,11 @@
+<div class="dashboard-component-wrapper md-whiteframe-5dp" layout="row">
+    <md-button ng-if="Component.initStep === 0" flex="100" class="init-component-btn" layout="row" layout-align="center center" ng-click="Component.initNew()">
+        <i class="material-icons">add</i>
+    </md-button>
+    <div ng-if="Component.initStep === 1" layout="row" layout-align="space-around center" class="component-type-selection" flex>
+        <md-button class="md-primary component-type" ng-repeat="type in Component.types" layout="column" layout-align="center center" flex>
+            <i class="material-icons">{{type.icon}}</i>
+            <strong>{{type.label}}</strong>
+        </md-button>
+    </div>
+</div>

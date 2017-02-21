@@ -1,16 +1,15 @@
 import {VisualisationConfig} from "./VisualisationConfig";
 import {Stream} from "./Stream";
-
-type VisualisationType = "MAPCHART" | "LINECHART";
+import {VisualisationTypeEnum} from "./VisualisationType";
 
 export class Visualisation <Config extends VisualisationConfig>{
     
-    private _type: VisualisationType;
+    private _type: VisualisationTypeEnum;
     private _stream: Stream;
     private _config: Config;
     
     
-    constructor(type?: VisualisationType, stream?: Stream, config?: Config) {
+    constructor(type?: VisualisationTypeEnum, stream?: Stream, config?: Config) {
         this._type = type;
         this._stream = stream;
         this._config = config;
@@ -24,11 +23,11 @@ export class Visualisation <Config extends VisualisationConfig>{
         this._config = value;
     }
     
-    get type(): VisualisationType {
+    get type(): VisualisationTypeEnum {
         return this._type;
     }
     
-    set type(value: VisualisationType) {
+    set type(value: VisualisationTypeEnum) {
         this._type = value;
     }
     

@@ -1,0 +1,17 @@
+dashboard-component {
+  .dashboard-component-wrapper {
+    height: 230px;
+    i.material-icons {
+      font-size: 50pt;
+    }
+    .init-component-btn {
+      margin: 0;
+      i.material-icons {
+        color: lightgrey;
+      }
+    }
+    .component-type-selection {
+
+    }
+  }
+}
