@@ -3,7 +3,7 @@
  */
 
 // Enum of valid visualization types
-export type VisualisationTypeEnum = "MAPCHART" | "LINECHART";
+export type VisualisationTypeEnum = "MapChart" | "LineChart";
 
 export interface FullType {
     label: string, // label to be displayed
@@ -21,12 +21,12 @@ export class VisualisationType {
     private static types: FullType[] = [
         {
             label: "Map Chart",
-            id: "MAPCHART",
+            id: "MapChart",
             icon: "bubble_chart"
         },
         {
             label: "Line Chart",
-            id: "LINECHART",
+            id: "LineChart",
             icon: "show_chart"
         }
     ];
@@ -34,7 +34,7 @@ export class VisualisationType {
     /**
      * Check if a type is valid (enabled)
      */
-    public static isValid = (type): boolean => {
+    public static isValid = (type: VisualisationTypeEnum): boolean => {
         return VisualisationType.types.map(t => t.id).indexOf(type) >= 0;
     };
     

@@ -3,9 +3,39 @@
         <i class="material-icons">add</i>
     </md-button>
     <div ng-if="Component.initStep === 1" layout="row" layout-align="space-around center" class="component-type-selection" flex>
-        <md-button class="md-primary component-type" ng-repeat="type in Component.types" layout="column" layout-align="center center" flex>
+        <md-button class="md-primary component-type" ng-repeat="type in Component.types" layout="column" layout-align="center center" flex ng-click="Component.selectType(type)">
             <i class="material-icons">{{type.icon}}</i>
             <strong>{{type.label}}</strong>
         </md-button>
+    </div>
+    <div ng-if="Component.initStep === 2" layout="column" layout-align="center stretch" flex>
+        <div layout="row" layout-align="center center" flex>
+            <md-input-container flex="50">
+                <label>Choose a stream</label>
+                <md-select ng-model="Component.componentStream">
+                    <md-option ng-repeat="stream in Component.streams" ng-value="stream">
+                        {{stream._label}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="end">
+            <md-button class="md-primary" ng-disabled="!Component.componentStream._id" ng-click="Component.selectStream()">Next</md-button>
+        </div>
+    </div>
+    <div ng-if="Component.initStep === 3" flex ng-switch="Component.componentType">
+        <line-chart-component ng-switch-when="LineChart" config-created="Component.configCreated(config)"></line-chart-component>
+        <map-chart-component ng-switch-when="MapChart" config-created="Component.configCreated(config)"></map-chart-component>
+    </div>
+    <div ng-if="Component.initStep === 4" layout="column" layout-align="center stretch" flex>
+        <div layout="row" layout-align="center center" flex>
+            <md-input-container flex="50">
+                <label>Widget Name</label>
+                <input type="text" ng-model="Component.componentName">
+            </md-input-container>
+        </div>
+        <div layout="row" layout-align="end">
+            <md-button class="md-primary" ng-disabled="!Component.componentName" ng-click="Component.displayWidget()">Display</md-button>
+        </div>
     </div>
 </div>
