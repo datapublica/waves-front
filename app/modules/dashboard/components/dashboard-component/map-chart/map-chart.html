@@ -1,0 +1,37 @@
+
+<div layout="row" layout-align="center">
+    <md-input-container flex="50">
+        <label>Position</label>
+        <md-select ng-model="Map.position">
+            <md-option ng-repeat="metric in Map.availableMetrics" ng-value="metric">
+                {{metric.name}}
+            </md-option>
+        </md-select>
+    </md-input-container>
+</div>
+
+<div layout="row" layout-align="center">
+    <md-input-container flex="50">
+        <label>Color metric</label>
+        <md-select ng-model="Map.color">
+            <md-option ng-repeat="metric in Map.availableMetrics" ng-value="metric">
+                {{metric.name}}
+            </md-option>
+        </md-select>
+    </md-input-container>
+</div>
+
+<div layout="row" layout-align="center">
+    <md-input-container flex="50">
+        <label>Size Metric</label>
+        <md-select ng-model="Map.size">
+            <md-option ng-repeat="metric in Map.availableMetrics" ng-value="metric">
+                {{metric.name}}
+            </md-option>
+        </md-select>
+    </md-input-container>
+</div>
+
+<div layout="row" layout-align="end">
+    <md-button class="md-primary" ng-disabled="!Map.position || !Map.color || !Map.size" ng-click="Map.selectMetrics()">Next</md-button>
+</div>
