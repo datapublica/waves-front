@@ -1,3 +1,3 @@
-import './dashboard-component';
+import './component-creation';
 
-angular.module('app.dashboard.components', ['app.dashboard.components.dashboardcomponent']);
+angular.module('app.dashboard.components', ['app.dashboard.components.creation']);

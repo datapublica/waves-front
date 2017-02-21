@@ -1,9 +1,9 @@
-import './dashboard-component.ts';
-import {DashboardComponent} from "./dashboard-component";
+import './component-creation.ts';
+import {CreationComponent} from "./component-creation";
 import {MapChartComponent} from "./map-chart/map-chart";
 import {LineChartComponent} from "./line-chart/line-chart";
 
-angular.module('app.dashboard.components.dashboardcomponent', [])
-.component('dashboardComponent', new DashboardComponent())
+angular.module('app.dashboard.components.creation', [])
+.component('componentCreation', new CreationComponent())
 .component('mapChartComponent', new MapChartComponent())
 .component('lineChartComponent', new LineChartComponent());
