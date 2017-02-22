@@ -6,7 +6,6 @@ import './line-chart-widget.scss';
 
 interface LineChartWidgetScope extends ng.IScope
 {
-    series: {sensor: string, metric: string, data: number[]}[];
     widgetName: string;
     widgetConfig: Visualisation<LineChartConfig>;
 }
@@ -32,84 +31,62 @@ export class LineChartWidget implements ng.IDirective {
             console.log($scope.widgetConfig);
             $scope.widgetName = $scope.widgetConfig.config.name;
             
-            let widgetSensors = $scope.widgetConfig.config.series.map(s => s.sensor['@id']);
+            let limit: number = 60,
+                duration:number = 1000,
+                now: any = new Date(Date.now() - duration);
+    
+            let chartColors = ['#3F51B5', '#4CAF50', '#FF5722'];
             
-            $scope.series = [];
+            let series = {};
+            let height = 180;
+    
+            let yScales = {};
             
-            $scope.widgetConfig.config.series.forEach(s => {
-                $scope.series.push({
+            $scope.widgetConfig.config.series.forEach((s,i: number) => {
+                series[s.sensor['@id'] + ' ' + s.metric.unit] = {
                     sensor: s.sensor['@id'],
                     metric: s.metric.unit,
-                    data: []
-                });
+                    color: chartColors[i],
+                    data: d3.range(60).map(function() {
+                        return 0
+                    })
+                };
+                
+                yScales[s.sensor['@id'] + ' ' + s.metric.unit] = d3.scale.linear()
+                .domain([0, 100])
+                .range([height, 0]);
             });
+    
+            console.log(series);
     
             $scope.$watch('latestEntry', (n) => {
                 
                 if(!n) return;
                 
-                $scope.series.forEach(s => {
-                    if(s.sensor === n.sensor && s.metric === n.metric) {
-                        s.data.push(n.newValue);
-                    }
-                });
-    
-                console.log($scope.series);
+                tick(n);
             });
             
             
             // d3 chart code
-    
-            let limit = 60,
-                duration = 750,
-                now = new Date(Date.now() - duration);
-    
-            let groups = {
-                current: {
-                    value: 0,
-                    color: 'orange',
-                    data: d3.range(limit).map(function() {
-                        return 0
-                    })
-                },
-                target: {
-                    value: 0,
-                    color: 'green',
-                    data: d3.range(limit).map(function() {
-                        return 0
-                    })
-                },
-                output: {
-                    value: 0,
-                    color: 'grey',
-                    data: d3.range(limit).map(function() {
-                        return 0
-                    })
-                }
-            };
-    
+            
             const graphContainer = d3.select(element[0]);
             let graphElement: any = graphContainer[0][0];
             const containerDimensions = graphElement.getBoundingClientRect();
     
-            let width = containerDimensions.width,
-                height = 190;
+            let width = containerDimensions.width;
+            
+            let currentSerie;
     
             let x:any = d3.time.scale()
             .domain([now - (limit - 2), now - duration])
             .range([0, width]);
     
-            let y: any = d3.scale.linear()
-            .domain([0, 100])
-            .range([height, 0]);
-    
-            let line = d3.svg.line()
-            .interpolate('basis')
+            let line:any = d3.svg.line()
             .x(function(d, i) {
                 return x(now - (limit - 1 - i) * duration);
             })
             .y(function(d) {
-                return y(d)
+                return yScales[currentSerie.sensor + ' ' + currentSerie.metric](d);
             });
             
             let svg = graphContainer.select('.graph-container').append('svg')
@@ -124,23 +101,39 @@ export class LineChartWidget implements ng.IDirective {
     
             let paths = svg.append('g');
     
-            for (let name in groups) {
-                let group = groups[name];
-                group.path = paths.append('path')
-                .data([group.data])
-                .attr('class', name + ' group')
-                .style('stroke', group.color)
+            for (let name in series) {
+                let serie = series[name];
+                serie.path = paths.append('path')
+                .data([serie.data])
+                .attr('class', name + ' serie')
+                .style('stroke', serie.color)
             }
     
-            function tick() {
+            function tick(newEntry) {
                 now = new Date();
+                
+                let min, max;
         
                 // Add new values
-                for (let name in groups) {
-                    let group = groups[name];
-                    //group.data.push(group.value) // Real values arrive at irregular intervals
-                    group.data.push(20 + Math.random() * 100);
-                    group.path.attr('d', line)
+                for (let name in series) {
+                    let serie = series[name];
+                    serie.shiftMe = false;
+                    if(serie.sensor === newEntry.sensor && serie.metric === newEntry.unit) {
+                        serie.data.push(parseFloat(newEntry.newValue));
+                        // console.log(serie);
+                        serie.shiftMe = true;
+                    }
+                    min = Math.min(...serie.data);
+                    max = Math.max(...serie.data);
+                    if(min === max){
+                        min = min-10;
+                        max = max+10;
+                    }
+                    currentSerie = serie;
+                    serie.path.attr('d', line);
+    
+                    // update the specific y domain
+                    yScales[serie.sensor + ' ' + serie.metric].domain([min, max]);
                 }
         
                 // Shift domain
@@ -157,17 +150,16 @@ export class LineChartWidget implements ng.IDirective {
                 .transition()
                 .duration(duration)
                 .ease('linear')
-                .attr('transform', 'translate(' + x(now - (limit - 1) * duration) + ')')
-                .each('end', tick);
+                .attr('transform', 'translate(' + x(now - (limit - 1) * duration) + ')');
         
-                // Remove oldest data point from each group
-                for (let name in groups) {
-                    let group = groups[name];
-                    group.data.shift()
+                // Remove oldest data point from each serie
+                for (let name in series) {
+                    let serie = series[name];
+                    if(serie.shiftMe){
+                        serie.data.shift()
+                    }
                 }
             }
-    
-            tick()
         }
     }
 }

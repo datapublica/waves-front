@@ -49,6 +49,7 @@ export class DashboardController {
                 let sensor = parseData['@graph'][0]['ssn:isProducedBy']['@id'];
                 let newValue = parseData['@graph'][1]['qudt:numericValue']['@value'];
                 let unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]);
+                // console.log({sensor, newValue, unit});
                 $timeout(()=>ctrl.latestEntry = {sensor, newValue, unit}, 0);
             };
         }

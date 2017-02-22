@@ -9,6 +9,7 @@ line-chart-widget {
     }
 
     .graph-container{
+      margin-top: 10px;
       .axis {
         stroke-width: 1;
       }
@@ -27,7 +28,7 @@ line-chart-widget {
         stroke: black;
       }
 
-      .group {
+      .serie {
         fill: none;
         stroke: black;
         stroke-width: 1.5;
