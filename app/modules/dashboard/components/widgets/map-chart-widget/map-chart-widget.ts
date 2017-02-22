@@ -22,7 +22,8 @@ export class MapChartWidget implements ng.IDirective {
     constructor() {
         
         this.scope = {
-            widgetConfig: '='
+            widgetConfig: '=',
+            latestEntry: '='
         };
     
         this.template = <string>require('./map-chart-widget.html');

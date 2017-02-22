@@ -5,7 +5,7 @@
     <div ng-if="Component.initStep === 1" layout="row" layout-align="space-around center" class="component-type-selection" flex>
         <md-button class="md-primary component-type" ng-repeat="type in Component.types" layout="column" layout-align="center center" flex ng-click="Component.selectType(type)">
             <i class="material-icons">{{type.icon}}</i>
-            <strong>{{type.label}}</strong>
+            <span>{{type.label}}</span>
         </md-button>
     </div>
     <div ng-if="Component.initStep === 2" layout="column" layout-align="center stretch" flex>

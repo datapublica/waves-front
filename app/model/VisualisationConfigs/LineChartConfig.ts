@@ -18,6 +18,6 @@ export class LineChartConfig extends VisualisationConfig{
 }
 
 class Serie {
-    id: string;
-    color: string;
+    sensor: any;
+    metric: any;
 }

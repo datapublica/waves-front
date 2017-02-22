@@ -29,6 +29,10 @@ export class SectorService {
         return this.units;
     }
     
+    public extractAfterSharp(str: string) {
+        return str.substring(str.indexOf("#") + 1);
+    }
+    
     private units = [
         {
             name: 'Chlorine',
