@@ -3,6 +3,7 @@ import {Visualisation} from "../../../../../model/Visualisation";
 import {LineChartConfig} from "../../../../../model/VisualisationConfigs/LineChartConfig";
 
 import './line-chart-widget.scss';
+import {SectorService} from "../../../../../services/SectorService";
 
 interface LineChartWidgetScope extends ng.IScope
 {
@@ -10,7 +11,7 @@ interface LineChartWidgetScope extends ng.IScope
     widgetConfig: Visualisation<LineChartConfig>;
 }
 
-@directive()
+@directive('SectorService')
 export class LineChartWidget implements ng.IDirective {
     
     public scope: any;
@@ -19,7 +20,7 @@ export class LineChartWidget implements ng.IDirective {
     
     private $scope;
     
-    constructor() {
+    constructor(SectorService: SectorService) {
         
         this.scope = {
             widgetConfig: '=',
@@ -100,13 +101,38 @@ export class LineChartWidget implements ng.IDirective {
             .call(x.axis = d3.svg.axis().scale(x).orient('bottom'));
     
             let paths = svg.append('g');
+            
+            let lastValueLabelsContainer = svg.insert('g', ':first-child')
+                .attr("class", "last-values")
+                .attr("transform", "translate(0,20)");
     
+            let lastValueLabels = {};
+            let dy = 0;
             for (let name in series) {
                 let serie = series[name];
+                console.log(serie);
+                
                 serie.path = paths.append('path')
                 .data([serie.data])
                 .attr('class', name + ' serie')
-                .style('stroke', serie.color)
+                .style('stroke', serie.color);
+    
+                lastValueLabelsContainer
+                .append("rect")
+                .attr('width', 10)
+                .attr('height', 10)
+                .attr('fill', serie.color)
+                .attr("y", dy - 10 + "px")
+                .attr("x", 5);
+    
+                lastValueLabels[serie.sensor + ' ' + serie.metric] = lastValueLabelsContainer.append("text")
+                .attr("text-anchor", "start")
+                .attr("font-size", "13px")
+                .attr("y", dy + "px")
+                .attr("x", 20)
+                .text(SectorService.extractAfterSharp(serie.sensor));
+        
+                dy += 20;
             }
     
             function tick(newEntry) {
@@ -122,6 +148,8 @@ export class LineChartWidget implements ng.IDirective {
                         serie.data.push(parseFloat(newEntry.newValue));
                         // console.log(serie);
                         serie.shiftMe = true;
+    
+                        lastValueLabels[serie.sensor + ' ' + serie.metric].text(SectorService.extractAfterSharp(serie.sensor) + ' ' + parseFloat(newEntry.newValue) + ' ' + SectorService.getUnitLabel(serie.metric));
                     }
                     min = Math.min(...serie.data);
                     max = Math.max(...serie.data);

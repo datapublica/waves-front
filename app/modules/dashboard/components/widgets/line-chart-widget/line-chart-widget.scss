@@ -10,6 +10,11 @@ line-chart-widget {
 
     .graph-container{
       margin-top: 10px;
+
+      .last-values {
+        background-color: white;
+      }
+
       .axis {
         stroke-width: 1;
       }

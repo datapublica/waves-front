@@ -29,6 +29,10 @@ export class SectorService {
         return this.units;
     }
     
+    public getUnitLabel(unitId) {
+        return this.units.filter(u => u.unit === unitId)[0].unitLabel
+    }
+    
     public extractAfterSharp(str: string) {
         return str.substring(str.indexOf("#") + 1);
     }
@@ -36,19 +40,23 @@ export class SectorService {
     private units = [
         {
             name: 'Chlorine',
-            unit: 'MilligramPerLiter'
+            unit: 'MilligramPerLiter',
+            unitLabel: 'mg / L'
         },
         {
             name: 'Input & Output Flow',
-            unit: 'CubicMeterPerHour'
+            unit: 'CubicMeterPerHour',
+            unitLabel: 'm3/h'
         },
         {
             name: 'pH',
-            unit: 'pH'
+            unit: 'pH',
+            unitLabel: 'pH'
         },
         {
             name: 'Pressure',
-            unit: 'Bar'
+            unit: 'Bar',
+            unitLabel: 'Bar'
         }
     ];
 
