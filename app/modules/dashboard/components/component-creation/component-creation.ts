@@ -17,7 +17,11 @@ export class CreationComponent implements ng.IComponentOptions {
     
     public template:any = <string>require('./component-creation.html');
     public restrict:string = "E";
-    public bindings:Object = {};
+    public bindings:Object = {
+        sensors: '=',
+        componentId: '=',
+        onActive: '&'
+    };
     public controllerAs:string = 'Component';
     
     public controller:Function = ($scope: CreationComponentScope, $log:angular.ILogService) :void => {
@@ -27,13 +31,21 @@ export class CreationComponent implements ng.IComponentOptions {
         ctrl.initStep = 0;
         
         let types: FullType[] = VisualisationType.getTypes();
-        let streams: Stream[] = [ new Stream('Waves:Stream', "S1-I", 54)];
+        let streams: Stream[] = [ new Stream('Waves:Stream', "SI-I", 54)];
 
         ctrl.types = types;
         ctrl.streams = streams;
     
         ctrl.initNew = () => {
             ctrl.initStep = 1;
+        };
+        
+        ctrl.cancel = () => {
+            ctrl.componentType = null;
+            ctrl.componentStream = null;
+            ctrl.chartConfig = null;
+            ctrl.componentName = null;
+            ctrl.initStep = 0;
         };
         
         ctrl.selectType = (type: FullType) => {
@@ -57,8 +69,7 @@ export class CreationComponent implements ng.IComponentOptions {
         ctrl.displayWidget = () => {
             ctrl.chartConfig._name = ctrl.componentName;
             let componentConfig: Visualisation<LineChartConfig> = new Visualisation<LineChartConfig>(ctrl.componentType, ctrl.componentStream, ctrl.chartConfig);
-    
-            console.log(componentConfig);
+            ctrl.onActive({id:ctrl.componentId, config: componentConfig});
         }
     };
 }

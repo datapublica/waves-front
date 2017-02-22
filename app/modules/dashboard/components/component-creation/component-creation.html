@@ -20,12 +20,13 @@
             </md-input-container>
         </div>
         <div layout="row" layout-align="end">
+            <md-button class="md-warn" ng-click="Component.cancel()">Cancel</md-button>
             <md-button class="md-primary" ng-disabled="!Component.componentStream._id" ng-click="Component.selectStream()">Next</md-button>
         </div>
     </div>
     <div ng-if="Component.initStep === 3" flex ng-switch="Component.componentType">
-        <line-chart-component ng-switch-when="LineChart" config-created="Component.configCreated(config)"></line-chart-component>
-        <map-chart-component ng-switch-when="MapChart" config-created="Component.configCreated(config)"></map-chart-component>
+        <line-chart-component ng-switch-when="LineChart" config-created="Component.configCreated(config)" cancel="Component.cancel()" sensors="Component.sensors"></line-chart-component>
+        <map-chart-component ng-switch-when="MapChart" config-created="Component.configCreated(config)" cancel="Component.cancel()"></map-chart-component>
     </div>
     <div ng-if="Component.initStep === 4" layout="column" layout-align="center stretch" flex>
         <div layout="row" layout-align="center center" flex>
@@ -35,6 +36,7 @@
             </md-input-container>
         </div>
         <div layout="row" layout-align="end">
+            <md-button class="md-warn" ng-click="Component.cancel()">Cancel</md-button>
             <md-button class="md-primary" ng-disabled="!Component.componentName" ng-click="Component.displayWidget()">Display</md-button>
         </div>
     </div>

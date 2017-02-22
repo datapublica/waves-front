@@ -24,6 +24,29 @@ export class SectorService {
     public getSectorLabel(label){
         return this.sectorLabels[label];
     }
+    
+    public getUnits() {
+        return this.units;
+    }
+    
+    private units = [
+        {
+            name: 'Chlorine',
+            unit: 'MilligramPerLiter'
+        },
+        {
+            name: 'Input & Output Flow',
+            unit: 'CubicMeterPerHour'
+        },
+        {
+            name: 'pH',
+            unit: 'pH'
+        },
+        {
+            name: 'Pressure',
+            unit: 'Bar'
+        }
+    ];
 
     private sectorLabels = {
         "waves:Brezin": "Brezin",

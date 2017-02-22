@@ -59,10 +59,10 @@ var config = {
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://10.1.1.103:9090'
+        target: 'http://10.1.1.113:9090'
       },
       '/ws': {
-        target: 'ws://10.1.1.103:9090',
+        target: 'ws://10.1.1.113:9090',
         ws: true
       }
     }

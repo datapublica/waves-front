@@ -1,3 +1,4 @@
+import {SectorService} from "../../services/SectorService";
 /**
  * ui-router Dashboard state
  * @param $stateProvider
@@ -12,6 +13,13 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
         template: <string>require('./dashboard.html'),
         controller: 'DashboardController',
         controllerAs: 'Dashboard',
-        resolve: {}
+        resolve: {
+            context : function (SectorService: SectorService) {
+                return SectorService.getS1iContext();
+            },
+            data: (SectorService: SectorService) => {
+                return SectorService.getS1iData();
+            }
+        }
     });
 }

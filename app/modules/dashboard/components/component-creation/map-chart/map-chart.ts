@@ -13,6 +13,7 @@ export class MapChartComponent implements ng.IComponentOptions {
     public template: any = <string>require('./map-chart.html');
     public restrict: string = "E";
     public bindings: Object = {
+        cancel: '&',
         configCreated: '&'
     };
     

@@ -1,3 +1,4 @@
+import {SectorService} from "../../services/SectorService";
 /**
  * The s1i controller for the app
  */
@@ -11,7 +12,7 @@ export class S1iController {
     public latestValue: any;
     public views: any[];
     
-    constructor($location: ng.ILocationService, $timeout: ng.ITimeoutService, $state:ng.ui.IStateService, context: any, data: any) {
+    constructor($location: ng.ILocationService, $timeout: ng.ITimeoutService, $state:ng.ui.IStateService,SectorService:SectorService , context: any, data: any) {
         "ngInject";
         var ctrl = this;
         
@@ -24,24 +25,7 @@ export class S1iController {
     
         ctrl.views = ['Map', 'Line Charts'];
     
-        ctrl.units = [
-            {
-                name: 'Chlorine',
-                unit: 'MilligramPerLiter'
-            },
-            {
-                name: 'Input & Output Flow',
-                unit: 'CubicMeterPerHour'
-            },
-            {
-                name: 'pH',
-                unit: 'pH'
-            },
-            {
-                name: 'Pressure',
-                unit: 'Bar'
-            }
-         ];
+        ctrl.units = SectorService.getUnits();
         
         ctrl.selectedUnit = $location.search()['unit'] || ctrl.units[1].name;
         ctrl.selectedView = $location.search()['view'] || ctrl.views[0];

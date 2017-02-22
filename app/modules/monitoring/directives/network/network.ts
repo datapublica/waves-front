@@ -442,7 +442,7 @@ export class NetworkDirective implements ng.IDirective {
             .attr("d", (d: any) => lineFunction(networkStatus[d.id][selectedMetric[d.id]].latestPoints, false));
         svg.selectAll(".monitoring-selected-metric")
             .text((d:any) => selectedMetric[d.id]);
-        ["95%", "avg", "min", "max"].forEach(agg => {
+        ["95%", "avg", "min", "max"].forEach((agg:string) => {
             svg.selectAll(".monitoring-metric-"+agg.replace("%", ""))
                 .text(function (d: any) {
                     return self.numberFilter(networkStatus[d.id][selectedMetric[d.id]].aggregates[agg], 1) + " " + self.$scope.metricUnits[selectedMetric[d.id]];

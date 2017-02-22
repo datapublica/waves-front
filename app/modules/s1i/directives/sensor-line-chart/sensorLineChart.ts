@@ -1,4 +1,4 @@
-import {directive} from "./../../../../decorators/directive";
+import {directive} from "../../../../decorators/directive";
 
 // Directive stylesheet
 import './sensor-line-chart.scss';
