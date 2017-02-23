@@ -65,10 +65,10 @@ export class S1iController {
         };
 
         client.onmessage = (e: any) => {
-            var parseData = JSON.parse(e.data);
-            var sensor = parseData['@graph'][0]['ssn:isProducedBy']['@id'];
-            var newValue = parseData['@graph'][1]['qudt:numericValue']['@value'];
-            var unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]) || null;
+            let parseData = JSON.parse(e.data);
+            let sensor = parseData['@graph'].filter(g => g['@type'] === "ssn:SensorOutput")[0]['ssn:isProducedBy']['@id'];
+            let newValue = parseData['@graph'].filter(g => g['@type'] === "ssn:ObservationValue")[0]['qudt:numericValue']['@value'];
+            let unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]) || null;
             if(unit){
                 // If the message is about a sensor on the unit we have selected, we push it to the sensor map directive
                 $timeout(()=>ctrl.latestValue = {sensor, newValue, unit}, 0);

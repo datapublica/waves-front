@@ -46,8 +46,8 @@ export class DashboardController {
             
             client.onmessage = (e: any) => {
                 let parseData = JSON.parse(e.data);
-                let sensor = parseData['@graph'][0]['ssn:isProducedBy']['@id'];
-                let newValue = parseData['@graph'][1]['qudt:numericValue']['@value'];
+                let sensor = parseData['@graph'].filter(g => g['@type'] === "ssn:SensorOutput")[0]['ssn:isProducedBy']['@id'];
+                let newValue = parseData['@graph'].filter(g => g['@type'] === "ssn:ObservationValue")[0]['qudt:numericValue']['@value'];
                 let unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]);
                 // console.log({sensor, newValue, unit});
                 $timeout(()=>ctrl.latestEntry = {sensor, newValue, unit}, 0);
