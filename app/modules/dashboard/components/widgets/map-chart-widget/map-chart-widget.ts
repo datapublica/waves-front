@@ -12,7 +12,7 @@ interface MapChartWidgetScope extends ng.IScope
     sensors: any;
 }
 
-@directive('SectorService')
+@directive('$timeout', 'SectorService')
 export class MapChartWidget implements ng.IDirective {
     
     public scope: any;
@@ -27,12 +27,16 @@ export class MapChartWidget implements ng.IDirective {
     private min: number;
     private COLOR_SCALE: any;
     private SectorService: SectorService;
+    private $timeout: ng.ITimeoutService;
     private chartUnit: string;
+    private chartSizeMetric: string;
+    private chartColorsMetric: string;
     
-    constructor(SectorService: SectorService) {
+    constructor($timeout: ng.ITimeoutService, SectorService: SectorService) {
         
         this.scope = {
             widgetConfig: '=',
+            widgetId: '=',
             sensors: '=',
             latestEntry: '='
         };
@@ -41,21 +45,23 @@ export class MapChartWidget implements ng.IDirective {
         this.link = ($scope: MapChartWidgetScope): void => {
             $scope.widgetName = $scope.widgetConfig.config.name;
     
-            console.log($scope.sensors);
-    
             this.min = Infinity;
             this.max = 0;
             this.SectorService = SectorService;
+            this.$timeout = $timeout;
     
             this.$scope= $scope; // we lose the this context in the watch callback
-            
-            this.chartUnit = $scope.widgetConfig.config.unit.unit;
     
+            console.log($scope.widgetConfig);
+            this.chartUnit = angular.copy($scope.widgetConfig.config.unit.unit);
+            
+            this.chartColorsMetric = angular.copy($scope.widgetConfig.config.color);
+            this.chartSizeMetric = angular.copy($scope.widgetConfig.config.size);
             $scope.$watch('latestEntry', (n: any) => {
                 if(!n || this.chartUnit !== n.unit ) return;
     
                 // console.log(n);
-                this.processColorScale(n);
+                this.processColorScale(angular.copy(n));
             });
     
             // Init and draw the default map
@@ -67,11 +73,13 @@ export class MapChartWidget implements ng.IDirective {
      * Inits and draws the map
      */
     private initMap:Function = ():void  =>{
-        this.$scope.map = L.map('widgetMap').setView([47,2], 6);
-        L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGVvbmNsZW0iLCJhIjoiY2lpcjh4Z3E5MDA5N3Zra3M0cWdkZWRyZyJ9.LZGaNGGMjhC8Ck8RLHGvXA').addTo(this.$scope.map);
-        
-        //Draw the Leaflet Circles
-        this.addPointsToMap();
+        this.$timeout(() => {
+            this.$scope.map = L.map('widgetMap' + this.$scope.widgetId).setView([47,2], 6);
+            L.tileLayer('https://api.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoiZGVvbmNsZW0iLCJhIjoiY2lpcjh4Z3E5MDA5N3Zra3M0cWdkZWRyZyJ9.LZGaNGGMjhC8Ck8RLHGvXA').addTo(this.$scope.map);
+    
+            //Draw the Leaflet Circles
+            this.addPointsToMap();
+        }, 0);
     };
     
     /**
@@ -96,16 +104,26 @@ export class MapChartWidget implements ng.IDirective {
         this.COLOR_SCALE.domain([this.min,this.max]);
         //noinspection TypeScriptValidateTypes
         this.COLOR_SCALE.interpolate(d3.interpolateHcl).range([d3.rgb("#4CAF50"), d3.rgb('#F44336')]);
-        
+    
         this.markersArray.forEach(marker => {
             let markerValue = marker.options.point.value;
             let markerLabel = marker.options.point['rdfs:label'];
             if(angular.isDefined(markerValue)){
-                marker.setStyle({fillColor: this.COLOR_SCALE(markerValue), color: this.COLOR_SCALE(markerValue)});
                 if (angular.isDefined(marker.options.point.value) && angular.isDefined(marker.options.point.lastValue) && this.max !== this.min) {
-                    let diffRatio = Math.sqrt(Math.abs((marker.options.point.value - marker.options.point.lastValue) / (this.max - this.min)));
-                    let pointSize = Math.max(diffRatio * 1800, 200);
-                    marker.setRadius(pointSize);
+                    if(this.chartSizeMetric === 'Diff'){
+                        let diffRatio = Math.sqrt(Math.abs((marker.options.point.value - marker.options.point.lastValue) / (this.max - this.min)));
+                        let pointSize = Math.max(diffRatio * 1800, 200);
+                        marker.setRadius(pointSize);
+                    }
+                    if(this.chartColorsMetric === 'Diff'){
+                        marker.setStyle({fillColor: this.COLOR_SCALE(marker.options.point.lastValue), color: this.COLOR_SCALE(marker.options.point.lastValue)});
+                    }
+                }
+                if(this.chartSizeMetric === 'Value'){
+                    marker.setRadius(markerValue);
+                }
+                if(this.chartColorsMetric === 'Value') {
+                    marker.setStyle({fillColor: this.COLOR_SCALE(markerValue), color: this.COLOR_SCALE(markerValue)});
                 }
                 marker.bindPopup(markerLabel + ' : ' + markerValue + ' ' + latestValue.unit);
             } else {
@@ -118,7 +136,6 @@ export class MapChartWidget implements ng.IDirective {
      * Add the selected points to the map
      */
     private addPointsToMap:Function = ():void => {
-        console.log(this.$scope.sensors);
         this.$scope.sensors.filter(
             point =>
             point['http://www.w3.org/2003/01/geo/wgs84_pos#lat']['@value'] > 0 && point['http://www.w3.org/2003/01/geo/wgs84_pos#long']['@value'] > 0

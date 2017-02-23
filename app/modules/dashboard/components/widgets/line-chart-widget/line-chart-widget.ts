@@ -29,7 +29,6 @@ export class LineChartWidget implements ng.IDirective {
     
         this.template = <string>require('./line-chart-widget.html');
         this.link = ($scope: LineChartWidgetScope, element): void => {
-            console.log($scope.widgetConfig);
             $scope.widgetName = $scope.widgetConfig.config.name;
             
             let limit: number = 60,
@@ -57,8 +56,6 @@ export class LineChartWidget implements ng.IDirective {
                 .domain([0, 100])
                 .range([height, 0]);
             });
-    
-            console.log(series);
     
             $scope.$watch('latestEntry', (n) => {
                 
@@ -110,7 +107,6 @@ export class LineChartWidget implements ng.IDirective {
             let dy = 0;
             for (let name in series) {
                 let serie = series[name];
-                console.log(serie);
                 
                 serie.path = paths.append('path')
                 .data([serie.data])
@@ -146,7 +142,6 @@ export class LineChartWidget implements ng.IDirective {
                     serie.shiftMe = false;
                     if(serie.sensor === newEntry.sensor && serie.metric === newEntry.unit) {
                         serie.data.push(parseFloat(newEntry.newValue));
-                        // console.log(serie);
                         serie.shiftMe = true;
     
                         lastValueLabels[serie.sensor + ' ' + serie.metric].text(SectorService.extractAfterSharp(serie.sensor) + ' ' + parseFloat(newEntry.newValue) + ' ' + SectorService.getUnitLabel(serie.metric));

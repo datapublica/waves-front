@@ -7,8 +7,6 @@ export class DashboardController {
     latestEntry: any;
     constructor($timeout: ng.ITimeoutService, SectorService: SectorService,  data, context) {
         let ctrl = this;
-        console.log(data.data);
-        console.log(context.data);
         
         let websocketActive = false;
         
@@ -18,9 +16,8 @@ export class DashboardController {
         ctrl.sensors.forEach((sensor) => {unitDic[sensor['@id']] = sensor['http://data.nasa.gov/qudt/owl/qudt#unit']['@id']});
         
         ctrl.activeWidget = (widgetId: number, widgetConfig: Visualisation<any>) => {
-            console.log(widgetId, widgetConfig);
             ctrl['widget'+widgetId+'Active'] = true;
-            ctrl['widget'+widgetId+'Config'] = widgetConfig;
+            ctrl['widget'+widgetId+'Config'] = angular.copy(widgetConfig);
             
             if(!websocketActive) {
                 // first widget added, we connect the websocket
