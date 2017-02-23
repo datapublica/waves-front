@@ -1,4 +1,4 @@
-import {directive} from "./../../../../decorators/directive";
+import {directive} from "../../../../decorators/directive";
 
 // Directive stylesheet
 import './sensors-map.scss';
@@ -52,7 +52,7 @@ export class SensorsMapDirective implements ng.IDirective {
     }
 
     /**
-     * Inits and draws the map, display the data points from the csv
+     * Inits and draws the map
      */
     private initMap:Function = ():void  =>{
         this.$scope.map = L.map('sensorsMap').setView(this.franceLoc, 6);
@@ -61,6 +61,7 @@ export class SensorsMapDirective implements ng.IDirective {
         //Draw the Leaflet Circles
         this.addPointsToMap();
     };
+    
     /**
      * Will determine if a value is red, yellow or green based on the values of other points
      */

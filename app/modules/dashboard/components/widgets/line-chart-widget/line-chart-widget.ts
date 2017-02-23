@@ -33,7 +33,7 @@ export class LineChartWidget implements ng.IDirective {
             $scope.widgetName = $scope.widgetConfig.config.name;
             
             let limit: number = 60,
-                duration:number = 1000,
+                duration:number = 500,
                 now: any = new Date(Date.now() - duration);
     
             let chartColors = ['#5BC0EB', '#9BC53D', '#E55934'];

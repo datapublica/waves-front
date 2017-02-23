@@ -31,6 +31,8 @@ export class DashboardController {
         let connectWS = () => {
             
             let client = new WebSocket('ws://localhost:3000/ws/54', 'echo-protocol');
+    
+            websocketActive = true;
             
             client.onerror = function() {
                 console.log('ÇAY KASSAY');

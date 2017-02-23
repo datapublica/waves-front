@@ -1,7 +1,11 @@
 import {MapChartConfig} from "../../../../../model/VisualisationConfigs/MapChartConfig";
+import {SectorService} from "../../../../../services/SectorService";
+
 /**
  * Map Chart Component
  */
+
+import './map-chart.scss';
 
 interface MapChartComponentScope extends ng.IScope
 {
@@ -19,30 +23,16 @@ export class MapChartComponent implements ng.IComponentOptions {
     
     public controllerAs: string = 'Map';
     
-    public controller: Function = ($scope: MapChartComponentScope): void => {
+    public controller: Function = ($scope: MapChartComponentScope, SectorService: SectorService): void => {
         'ngInject';
         let ctrl = $scope.Map;
     
-        ctrl.availableMetrics = [
-            {
-                name: 'Metric1'
-            },
-            {
-                name: 'Metric2'
-            },
-            {
-                name: 'Metric3'
-            },
-            {
-                name: 'Metric4'
-            },
-            {
-                name: 'Metric5'
-            }
-        ];
+        ctrl.units = SectorService.getUnits();
     
+        ctrl.availableMetrics = ['Value', 'Diff'];
+        
         ctrl.selectMetrics = () => {
-            let chartConfig = new MapChartConfig(null, ctrl.position, ctrl.color, ctrl.size);
+            let chartConfig = new MapChartConfig(null, ctrl.unit, ctrl.color, ctrl.size);
             ctrl.configCreated({config: chartConfig});
         };
     }
