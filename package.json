@@ -12,7 +12,7 @@
     "angular-i18n": "^1.5.3",
     "angular-material": "1.0.6",
     "angular-messages": "^1.5.0",
-    "angular-ui-router": "^0.2.18",
+    "angular-ui-router": "^0.3.1",
     "bufferutil": "^1.2.1",
     "d3": "3.5.16",
     "fs": "0.0.2",
