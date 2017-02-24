@@ -1,15 +1,18 @@
 import {Visualisation} from "../../model/Visualisation";
 import {SectorService} from "../../services/SectorService";
+import {StreamingService} from "../../services/StreamingService";
+
 
 export class DashboardController {
     sensors: any[];
     activeWidget: Function;
     latestEntry: any;
-    constructor($timeout: ng.ITimeoutService, SectorService: SectorService,  data, context) {
+    streams: any;
+    constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, data, context) {
+        "ngInject";
         let ctrl = this;
-        
-        let websocketActive = false;
-        
+
+        ctrl.streams = {};
         ctrl.sensors = context.data['@graph'] && context.data['@graph'].filter(s => s['@type'] === 'http://purl.oclc.org/NET/ssnx/ssn#Sensor') || [];
     
         let unitDic = {};
@@ -18,39 +21,22 @@ export class DashboardController {
         ctrl.activeWidget = (widgetId: number, widgetConfig: Visualisation<any>) => {
             ctrl['widget'+widgetId+'Active'] = true;
             ctrl['widget'+widgetId+'Config'] = angular.copy(widgetConfig);
-            
-            if(!websocketActive) {
-                // first widget added, we connect the websocket
-                connectWS();
+
+            // listening to the data
+            if (!ctrl.streams[widgetConfig.stream.id]) {
+                ctrl.streams[widgetConfig.stream.id] = StreamingService.streamData(widgetConfig.stream.id, parseData => {
+                    let sensor = parseData['@graph'].filter(g => g['@type'] === "ssn:SensorOutput")[0]['ssn:isProducedBy']['@id'];
+                    let newValue = parseData['@graph'].filter(g => g['@type'] === "ssn:ObservationValue")[0]['qudt:numericValue']['@value'];
+                    let unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]);
+                    // console.log({sensor, newValue, unit});
+                    ctrl.latestEntry = {sensor, newValue, unit};
+                });
             }
         };
-        
-        let connectWS = () => {
-            
-            let client = new WebSocket('ws://localhost:3000/ws/54', 'echo-protocol');
-    
-            websocketActive = true;
-            
-            client.onerror = function() {
-                console.log('ÇAY KASSAY');
-            };
-            
-            client.onopen = function() {
-                console.log('ÇAY PARTI');
-            };
-            
-            client.onclose = function() {
-                console.log('ÇAY FINI');
-            };
-            
-            client.onmessage = (e: any) => {
-                let parseData = JSON.parse(e.data);
-                let sensor = parseData['@graph'].filter(g => g['@type'] === "ssn:SensorOutput")[0]['ssn:isProducedBy']['@id'];
-                let newValue = parseData['@graph'].filter(g => g['@type'] === "ssn:ObservationValue")[0]['qudt:numericValue']['@value'];
-                let unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]);
-                // console.log({sensor, newValue, unit});
-                $timeout(()=>ctrl.latestEntry = {sensor, newValue, unit}, 0);
-            };
-        }
+        $scope.$on("$destroy", function() {
+            for(let key in ctrl.streams) {
+                ctrl.streams[key].stop();
+            }
+        });
     }
 }
