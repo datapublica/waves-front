@@ -24,7 +24,7 @@ export class DashboardController {
 
             // listening to the data
             if (!ctrl.streams[widgetConfig.stream.id]) {
-                ctrl.streams[widgetConfig.stream.id] = StreamingService.streamData(widgetConfig.stream.id, parseData => {
+                ctrl.streams[widgetConfig.stream.id] = StreamingService.mockData(widgetConfig.stream.id, parseData => {
                     let sensor = parseData['@graph'].filter(g => g['@type'] === "ssn:SensorOutput")[0]['ssn:isProducedBy']['@id'];
                     let newValue = parseData['@graph'].filter(g => g['@type'] === "ssn:ObservationValue")[0]['qudt:numericValue']['@value'];
                     let unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]);

@@ -15,10 +15,10 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
         controllerAs: 'Dashboard',
         resolve: {
             context : function (SectorService: SectorService) {
-                return SectorService.getS1iContext();
+                return SectorService.getS1iContextMock();
             },
             data: (SectorService: SectorService) => {
-                return SectorService.getS1iData();
+                return SectorService.getS1iDataMock();
             }
         }
     });

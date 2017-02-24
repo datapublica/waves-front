@@ -17,8 +17,16 @@ export class SectorService {
         return this.http.get('./api/54');
     }
 
+    public getS1iDataMock(): any {
+        return {data: JSON.parse(require<string>("../assets/data/dump-54.json"))};
+    }
+
     public getS1iContext() : any {
         return this.http.get('./api/context');
+    }
+
+    public getS1iContextMock(): any {
+        return {data: JSON.parse(require<string>("../assets/data/context.json"))};
     }
 
     public getSectorLabel(label){
