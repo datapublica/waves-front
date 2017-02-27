@@ -1,5 +1,11 @@
 line-chart-component {
-  p.disabled {
-    color: lightgrey;
+  .serie-row {
+    margin-top: 15px;
+    md-input-container {
+      margin: 0;
+    }
+    .serie-def {
+      margin-bottom: 5px;
+    }
   }
 }

@@ -1,6 +1,6 @@
 line-chart-widget {
   .widget-container {
-    height: 260px;
+    height: 330px;
 
     .widget-name {
       color: white;
@@ -36,7 +36,9 @@ line-chart-widget {
       .serie {
         fill: none;
         stroke: black;
-        stroke-width: 1.5;
+        &.dotted {
+          stroke-dasharray: 3;
+        }
       }
     }
   }

@@ -1,4 +1,5 @@
 export interface CustomRootScope extends ng.IRootScopeService {
+    displayDropback: Function;
     changingState: boolean
 }
 
@@ -7,6 +8,7 @@ export function run($rootScope: CustomRootScope, $log: ng.ILogService) {
 
     $rootScope.$on("$stateChangeStart", () => {
         $rootScope.changingState = true;
+        $rootScope.displayDropback = undefined;
     });
 
     $rootScope.$on("$stateChangeSuccess", () => {

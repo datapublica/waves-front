@@ -1,8 +1,10 @@
 component-creation {
   .component-creation-wrapper {
-    height: 260px;
-    i.material-icons {
-      font-size: 50pt;
+    height: 330px;
+    .init-component-btn, .component-type {
+      i.material-icons {
+        font-size: 50pt;
+      }
     }
     .init-component-btn {
       margin: 0;

@@ -28,6 +28,8 @@ import './modules/dashboard';
 import './modules/monitoring';
 import './components';
 
+import './global.scss';
+
 /**
  * The main app module.
  */

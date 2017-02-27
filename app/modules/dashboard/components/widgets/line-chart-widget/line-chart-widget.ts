@@ -1,6 +1,6 @@
 import {directive} from "../../../../../decorators/directive";
 import {Visualisation} from "../../../../../model/Visualisation";
-import {LineChartConfig} from "../../../../../model/VisualisationConfigs/LineChartConfig";
+import {LineChartConfig, Serie} from "../../../../../model/VisualisationConfigs/LineChartConfig";
 
 import './line-chart-widget.scss';
 import {SectorService} from "../../../../../services/SectorService";
@@ -11,7 +11,7 @@ interface LineChartWidgetScope extends ng.IScope
     widgetConfig: Visualisation<LineChartConfig>;
 }
 
-@directive('SectorService')
+@directive('$filter', 'SectorService')
 export class LineChartWidget implements ng.IDirective {
     
     public scope: any;
@@ -20,7 +20,7 @@ export class LineChartWidget implements ng.IDirective {
     
     private $scope;
     
-    constructor(SectorService: SectorService) {
+    constructor($filter: ng.IFilterService, SectorService: SectorService) {
         
         this.scope = {
             widgetConfig: '=',
@@ -35,18 +35,18 @@ export class LineChartWidget implements ng.IDirective {
                 duration:number = 500,
                 now: any = new Date(Date.now() - duration);
     
-            let chartColors = ['#5BC0EB', '#9BC53D', '#E55934'];
-            
             let series = {};
-            let height = 180;
+            let height = 250;
     
             let yScales = {};
             
-            $scope.widgetConfig.config.series.forEach((s,i: number) => {
+            $scope.widgetConfig.config.series.forEach((s: Serie) => {
                 series[s.sensor['@id'] + ' ' + s.metric.unit] = {
                     sensor: s.sensor['@id'],
                     metric: s.metric.unit,
-                    color: chartColors[i],
+                    color: s.color.hex,
+                    lineType: s.lineType,
+                    strokeWidth: s.strokeWidth,
                     data: d3.range(60).map(function() {
                         return 0
                     })
@@ -110,8 +110,9 @@ export class LineChartWidget implements ng.IDirective {
                 
                 serie.path = paths.append('path')
                 .data([serie.data])
-                .attr('class', name + ' serie')
-                .style('stroke', serie.color);
+                .attr('class', name + ' serie ' + serie.lineType)
+                .style('stroke', serie.color)
+                .style('stroke-width', serie.strokeWidth);
     
                 lastValueLabelsContainer
                 .append("rect")
@@ -144,7 +145,7 @@ export class LineChartWidget implements ng.IDirective {
                         serie.data.push(parseFloat(newEntry.newValue));
                         serie.shiftMe = true;
     
-                        lastValueLabels[serie.sensor + ' ' + serie.metric].text(SectorService.extractAfterSharp(serie.sensor) + ' ' + parseFloat(newEntry.newValue) + ' ' + SectorService.getUnitLabel(serie.metric));
+                        lastValueLabels[serie.sensor + ' ' + serie.metric].text(SectorService.extractAfterSharp(serie.sensor) + ' ' + $filter('number')(newEntry.newValue, 2) + ' ' + SectorService.getUnitLabel(serie.metric));
                     }
                     min = Math.min(...serie.data);
                     max = Math.max(...serie.data);

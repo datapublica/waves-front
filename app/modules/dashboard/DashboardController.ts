@@ -8,12 +8,15 @@ export class DashboardController {
     activeWidget: Function;
     latestEntry: any;
     streams: any;
+    color: any;
     constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, data, context) {
         "ngInject";
         let ctrl = this;
 
         ctrl.streams = {};
         ctrl.sensors = context.data['@graph'] && context.data['@graph'].filter(s => s['@type'] === 'http://purl.oclc.org/NET/ssnx/ssn#Sensor') || [];
+      
+       ctrl.color = {};
     
         let unitDic = {};
         ctrl.sensors.forEach((sensor) => {unitDic[sensor['@id']] = sensor['http://data.nasa.gov/qudt/owl/qudt#unit']['@id']});

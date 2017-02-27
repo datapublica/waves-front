@@ -17,7 +17,10 @@ export class LineChartConfig extends VisualisationConfig{
     }
 }
 
-class Serie {
+export class Serie {
     sensor: any;
     metric: any;
+    lineType: string;
+    color: {hex: string};
+    strokeWidth: number;
 }

@@ -1,4 +1,4 @@
-import {LineChartConfig} from "../../../../../model/VisualisationConfigs/LineChartConfig";
+import {LineChartConfig, Serie} from "../../../../../model/VisualisationConfigs/LineChartConfig";
 /**
  * Line Chart Component
  */
@@ -28,14 +28,15 @@ export class LineChartComponent implements ng.IComponentOptions {
     
         ctrl.metrics = SectorService.getUnits();
         
-        ctrl.series = [];
-        
-        ctrl.addSerie = () => {
-            ctrl.series.push();
-        };
+        // series with default colors
+        ctrl.series = <Serie[]>[
+            {strokeWidth: 1, color: {hex:'#5BC0EB'}, lineType: 'full'},
+            {strokeWidth: 1, color: {hex:'#9BC53D'}, lineType: 'full'},
+            {strokeWidth: 1, color: {hex:'#E55934'}, lineType: 'full'}
+        ];
         
         ctrl.selectSeries = () => {
-          let chartConfig = new LineChartConfig(null, ctrl.series);
+          let chartConfig = new LineChartConfig(null, ctrl.series.filter(s => s.sensor && s.metric));
           
           ctrl.configCreated({config: chartConfig});
         };
