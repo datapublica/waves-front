@@ -3,7 +3,7 @@
         <span flex>
             {{widgetName}}
         </span>
-        <i class="material-icons">settings</i>
+        <i class="material-icons" ng-click="modifyWidget({widgetId: widgetId, widgetConfig: widgetConfig})">settings</i>
         <i class="material-icons" ng-click="deleteConfirm = true">close</i>
     </div>
     <div ng-hide="deleteConfirm">

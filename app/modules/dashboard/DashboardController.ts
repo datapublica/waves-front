@@ -11,6 +11,7 @@ export class DashboardController {
     streams: any;
     color: any;
     deleteWidget: Function;
+    modifyWidget: Function;
     constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, StorageService:StorageService, data, context, widgetsLocalStorage) {
         "ngInject";
         let ctrl = this;
@@ -68,6 +69,10 @@ export class DashboardController {
             ctrl['widget'+widgetId+'Active'] = false;
             ctrl['widget'+widgetId+'Config'] = null;
             StorageService.removeWidgetConfig(widgetId);
-        }
+        };
+    
+        ctrl.modifyWidget = (widgetId: number, widgetConfig: Visualisation<any>) => {
+            ctrl['widget'+widgetId+'Active'] = false;
+        };
     }
 }

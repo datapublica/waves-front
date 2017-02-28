@@ -25,8 +25,8 @@
         </div>
     </div>
     <div ng-if="Component.initStep === 3" flex ng-switch="Component.componentType">
-        <line-chart-component ng-switch-when="LineChart" config-created="Component.configCreated(config)" cancel="Component.cancel()" sensors="Component.sensors"></line-chart-component>
-        <map-chart-component ng-switch-when="MapChart" config-created="Component.configCreated(config)" cancel="Component.cancel()"></map-chart-component>
+        <line-chart-component ng-switch-when="LineChart" chart-config="Component.chartConfig" config-created="Component.configCreated(config)" cancel="Component.cancel()" sensors="Component.sensors"></line-chart-component>
+        <map-chart-component ng-switch-when="MapChart" chart-config="Component.chartConfig" config-created="Component.configCreated(config)" cancel="Component.cancel()"></map-chart-component>
     </div>
     <div ng-if="Component.initStep === 4" layout="column" layout-align="center stretch" flex>
         <div layout="row" layout-align="center center" flex>

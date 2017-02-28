@@ -17,8 +17,6 @@ export class WidgetCore implements ng.IDirective {
     public link: any;
     public template: any;
     
-    private $scope;
-    
     constructor() {
         
         this.scope = {
@@ -26,6 +24,7 @@ export class WidgetCore implements ng.IDirective {
             latestEntry: '=',
             sensors: '=',
             widgetId: '=',
+            modifyWidget: '&',
             deleteWidget: '&'
         };
         

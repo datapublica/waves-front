@@ -20,6 +20,7 @@ export class CreationComponent implements ng.IComponentOptions {
     public bindings:Object = {
         sensors: '=',
         componentId: '=',
+        widgetConfig: '=',
         onActive: '&'
     };
     public controllerAs:string = 'Component';
@@ -27,11 +28,25 @@ export class CreationComponent implements ng.IComponentOptions {
     public controller:Function = ($scope: CreationComponentScope, $log:angular.ILogService) :void => {
         'ngInject';
         let ctrl = $scope.Component;
-        
-        ctrl.initStep = 0;
-        
+    
         let types: FullType[] = VisualisationType.getTypes();
         let streams: Stream[] = [ new Stream('Waves:Stream', "SI-I", 54)];
+        
+        let mapExistingFields = () => {
+            ctrl.componentType = angular.copy(ctrl.widgetConfig.type);
+            ctrl.componentStream = streams.filter(s => s.id === ctrl.widgetConfig.stream.id)[0];
+            ctrl.chartConfig = angular.copy(ctrl.widgetConfig.config);
+            ctrl.componentName = angular.copy(ctrl.widgetConfig.config.name);
+        };
+        
+        if(angular.isDefined(ctrl.widgetConfig)){
+            // modifying an existing widget
+            ctrl.initStep = 2;
+            mapExistingFields();
+        } else {
+            //creating a new widget
+            ctrl.initStep = 0;
+        }
 
         ctrl.types = types;
         ctrl.streams = streams;
@@ -41,11 +56,19 @@ export class CreationComponent implements ng.IComponentOptions {
         };
         
         ctrl.cancel = () => {
-            ctrl.componentType = null;
-            ctrl.componentStream = null;
-            ctrl.chartConfig = null;
-            ctrl.componentName = null;
-            ctrl.initStep = 0;
+    
+            if(angular.isDefined(ctrl.widgetConfig)){
+                // remapping to initial values and returning to the existing widget
+                mapExistingFields();
+                ctrl.displayWidget();
+            } else {
+                // returning to step 0
+                ctrl.componentType = null;
+                ctrl.componentStream = null;
+                ctrl.chartConfig = null;
+                ctrl.componentName = null;
+                ctrl.initStep = 0;
+            }
         };
         
         ctrl.selectType = (type: FullType) => {
