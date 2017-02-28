@@ -7,7 +7,6 @@ import {SectorService} from "../../../../../services/SectorService";
 
 interface LineChartWidgetScope extends ng.IScope
 {
-    widgetName: string;
     widgetConfig: Visualisation<LineChartConfig>;
 }
 
@@ -29,7 +28,6 @@ export class LineChartWidget implements ng.IDirective {
     
         this.template = <string>require('./line-chart-widget.html');
         this.link = ($scope: LineChartWidgetScope, element): void => {
-            $scope.widgetName = $scope.widgetConfig.config.name;
             
             let limit: number = 60,
                 duration:number = 500,

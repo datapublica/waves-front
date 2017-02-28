@@ -1,18 +1,9 @@
 map-chart-widget {
-  .widget-container {
-    height: 330px;
-
-    .widget-name {
-      color: white;
-      background-color: #ED6A5A;
-      padding: 15px;
-    }
-    .widgetMap {
-      height: 252px;
-      width: 100%;
-      path {
-        transition: 1s;
-      }
+  .widgetMap {
+    height: 252px;
+    width: 100%;
+    path {
+      transition: 1s;
     }
   }
 }

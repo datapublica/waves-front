@@ -1,0 +1,7 @@
+<div class="widget-container md-whiteframe-5dp">
+    <div class="widget-name">
+        {{widgetName}}
+    </div>
+    <line-chart-widget ng-if="widgetConfig._type === 'LineChart'" latest-entry="latestEntry" widget-config="widgetConfig"></line-chart-widget>
+    <map-chart-widget ng-if="widgetConfig._type === 'MapChart'" latest-entry="latestEntry" widget-config="widgetConfig" sensors="sensors" widget-id="1"></map-chart-widget>
+</div>

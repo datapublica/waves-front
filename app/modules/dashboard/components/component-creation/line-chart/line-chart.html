@@ -29,10 +29,10 @@
                             <md-tooltip md-direction="top">Serie weight</md-tooltip>
                             <i class="material-icons grey-icon">line_weight</i>
                         </span>
-                        <md-slider flex min="1" max="9" ng-model="Line.series[serie].strokeWidth">
+                        <md-slider flex min="1" max="9" ng-model="Line.series[serie].strokeWidth" aria-label="Serie Weight slider">
                         </md-slider>
                         <md-input-container>
-                            <input flex type="number" ng-model="Line.series[serie].strokeWidth" min="1" max="9">
+                            <input flex type="number" ng-model="Line.series[serie].strokeWidth" min="1" max="9" aria-label="Serie Weight input">
                         </md-input-container>
                     </md-slider-container>
                     <div flex layout="row" layout-align="space-around center">

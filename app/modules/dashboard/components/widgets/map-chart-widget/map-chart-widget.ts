@@ -7,7 +7,6 @@ import {SectorService} from "../../../../../services/SectorService";
 
 interface MapChartWidgetScope extends ng.IScope
 {
-    widgetName: string;
     widgetConfig: Visualisation<MapChartConfig>;
     sensors: any;
 }
@@ -43,7 +42,6 @@ export class MapChartWidget implements ng.IDirective {
     
         this.template = <string>require('./map-chart-widget.html');
         this.link = ($scope: MapChartWidgetScope): void => {
-            $scope.widgetName = $scope.widgetConfig.config.name;
     
             this.min = Infinity;
             this.max = 0;
@@ -52,7 +50,6 @@ export class MapChartWidget implements ng.IDirective {
     
             this.$scope= $scope; // we lose the this context in the watch callback
     
-            console.log($scope.widgetConfig);
             this.chartUnit = angular.copy($scope.widgetConfig.config.unit.unit);
             
             this.chartColorsMetric = angular.copy($scope.widgetConfig.config.color);

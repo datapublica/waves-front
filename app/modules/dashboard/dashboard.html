@@ -5,32 +5,28 @@
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100">
             <component-creation sensors="Dashboard.sensors" ng-if="!Dashboard.widget1Active" component-id="1" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget1Active">
-                <line-chart-widget latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget1Config" ng-if="Dashboard.widget1Config._type === 'LineChart'"></line-chart-widget>
-                <map-chart-widget widget-id="1" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget1Config" ng-if="Dashboard.widget1Config._type === 'MapChart'" sensors="Dashboard.sensors"></map-chart-widget>
+                <widget-core widget-id="1" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget1Config" sensors="Dashboard.sensors"></widget-core>
             </div>
         </div>
 
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100" ng-class="{disabled: !Dashboard.widget1Active}">
             <component-creation sensors="Dashboard.sensors" ng-if="!Dashboard.widget2Active" component-id="2" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget2Active">
-                <line-chart-widget latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget2Config" ng-if="Dashboard.widget2Config._type === 'LineChart'"></line-chart-widget>
-                <map-chart-widget widget-id="2" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget2Config" ng-if="Dashboard.widget2Config._type === 'MapChart'" sensors="Dashboard.sensors"></map-chart-widget>
+                <widget-core widget-id="2" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget2Config" sensors="Dashboard.sensors"></widget-core>
             </div>
         </div>
 
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100" ng-if="Dashboard.widget1Active" ng-class="{disabled: Dashboard.widget1Active && !Dashboard.widget2Active}">
             <component-creation sensors="Dashboard.sensors" ng-if="!Dashboard.widget3Active" component-id="3" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget3Active">
-                <line-chart-widget latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget3Config" ng-if="Dashboard.widget3Config._type === 'LineChart'"></line-chart-widget>
-                <map-chart-widget widget-id="3" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget3Config" ng-if="Dashboard.widget3Config._type === 'MapChart'" sensors="Dashboard.sensors"></map-chart-widget>
+                <widget-core widget-id="3" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget3Config" sensors="Dashboard.sensors"></widget-core>
             </div>
         </div>
 
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100" ng-if="Dashboard.widget2Active" ng-class="{disabled: Dashboard.widget2Active && !Dashboard.widget3Active}">
             <component-creation sensors="Dashboard.sensors" ng-if="!Dashboard.widget4Active" component-id="4" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget4Active">
-                <line-chart-widget latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget4Config" ng-if="Dashboard.widget4Config._type === 'LineChart'"></line-chart-widget>
-                <map-chart-widget widget-id="4" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget4Config" ng-if="Dashboard.widget4Config._type === 'MapChart'" sensors="Dashboard.sensors"></map-chart-widget>
+                <widget-core widget-id="4" latest-entry="Dashboard.latestEntry" widget-config="Dashboard.widget4Config" sensors="Dashboard.sensors"></widget-core>
             </div>
         </div>
 
