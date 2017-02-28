@@ -3,17 +3,9 @@
  */
 
 export abstract class VisualisationConfig {
-    private _name: string;
+    public name: string;
     
     constructor(name?: string) {
-        this._name = name;
-    }
-    
-    get name(): string {
-        return this._name;
-    }
-    
-    set name(value: string) {
-        this._name = value;
+        this.name = name;
     }
 }

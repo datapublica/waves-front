@@ -1,4 +1,5 @@
 import {SectorService} from "../../services/SectorService";
+import {StorageService} from "../../services/StorageService";
 /**
  * ui-router Dashboard state
  * @param $stateProvider
@@ -19,6 +20,9 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
             },
             data: (SectorService: SectorService) => {
                 return SectorService.getS1iDataMock();
+            },
+            widgetsLocalStorage: (StorageService: StorageService) => {
+                return StorageService.restoreWidgetConfigs();
             }
         }
     });

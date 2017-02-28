@@ -1,6 +1,7 @@
 import {Visualisation} from "../../model/Visualisation";
 import {SectorService} from "../../services/SectorService";
 import {StreamingService} from "../../services/StreamingService";
+import {StorageService} from "../../services/StorageService";
 
 
 export class DashboardController {
@@ -10,15 +11,15 @@ export class DashboardController {
     streams: any;
     color: any;
     deleteWidget: Function;
-    constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, data, context) {
+    constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, StorageService:StorageService, data, context, widgetsLocalStorage) {
         "ngInject";
         let ctrl = this;
-
+        
         ctrl.streams = {};
         ctrl.sensors = context.data['@graph'] && context.data['@graph'].filter(s => s['@type'] === 'http://purl.oclc.org/NET/ssnx/ssn#Sensor') || [];
-      
-       ctrl.color = {};
-    
+        
+        ctrl.color = {};
+        
         let unitDic = {};
         ctrl.sensors.forEach((sensor) => {unitDic[sensor['@id']] = sensor['http://data.nasa.gov/qudt/owl/qudt#unit']['@id']});
         
@@ -26,7 +27,9 @@ export class DashboardController {
             ctrl['widget'+widgetId+'Active'] = true;
             ctrl['widget'+(widgetId+1)+'Display'] = true;
             ctrl['widget'+widgetId+'Config'] = angular.copy(widgetConfig);
-
+            
+            StorageService.updateWidgetConfigs(widgetId, widgetConfig);
+            
             // listening to the data
             if (!ctrl.streams[widgetConfig.stream.id]) {
                 ctrl.streams[widgetConfig.stream.id] = StreamingService.mockData(widgetConfig.stream.id, parseData => {
@@ -38,6 +41,23 @@ export class DashboardController {
                 });
             }
         };
+    
+        // if widgetConfigs stored in localeStorage, we activate the corresponding widgets
+        if(widgetsLocalStorage) {
+            [1,2,3,4].forEach(widgetId => {
+                let storedConfig = widgetsLocalStorage[widgetId];
+                if(storedConfig){
+                    // config exists, we activate the widgets before it, just in case
+                    for(let i = 1; i < widgetId; i++){
+                        ctrl['widget'+(i+1)+'Display'] = true;
+                    }
+                
+                    // and we activate the widget
+                    ctrl.activeWidget(widgetId, storedConfig);
+                }
+            })
+        }
+        
         $scope.$on("$destroy", function() {
             for(let key in ctrl.streams) {
                 ctrl.streams[key].stop();
@@ -47,6 +67,7 @@ export class DashboardController {
         ctrl.deleteWidget = (widgetId: number) => {
             ctrl['widget'+widgetId+'Active'] = false;
             ctrl['widget'+widgetId+'Config'] = null;
+            StorageService.removeWidgetConfig(widgetId);
         }
     }
 }

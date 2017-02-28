@@ -67,7 +67,7 @@ export class CreationComponent implements ng.IComponentOptions {
         };
         
         ctrl.displayWidget = () => {
-            ctrl.chartConfig._name = ctrl.componentName;
+            ctrl.chartConfig.name = ctrl.componentName;
             let componentConfig: Visualisation<LineChartConfig> = new Visualisation<LineChartConfig>(ctrl.componentType, ctrl.componentStream, ctrl.chartConfig);
             ctrl.onActive({id:ctrl.componentId, config: componentConfig});
         }

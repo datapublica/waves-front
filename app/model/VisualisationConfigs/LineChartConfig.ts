@@ -1,19 +1,12 @@
 import {VisualisationConfig} from "../VisualisationConfig";
 
 export class LineChartConfig extends VisualisationConfig{
-    private _series: Serie[];
+    public series: Serie[];
     
-    get series(): Serie[] {
-        return this._series;
-    }
-    
-    set series(value: Serie[]) {
-        this._series = value;
-    }
     
     constructor(visuName?: string, series?: Serie[]) {
         super(visuName);
-        this._series = series;
+        this.series = series;
     }
 }
 
