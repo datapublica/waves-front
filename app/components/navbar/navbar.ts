@@ -20,6 +20,6 @@ export class NavbarComponent implements ng.IComponentOptions {
 
     public controller:Function = ($scope: NavbarComponentScope) :void => {
         'ngInject';
-        var ctrl = $scope.Navbar;
+        let ctrl = $scope.Navbar;
     };
 }
