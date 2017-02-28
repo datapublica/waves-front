@@ -3,21 +3,27 @@
         <span flex>
             {{widgetName}}
         </span>
-        <i class="material-icons" ng-click="modifyWidget({widgetId: widgetId, widgetConfig: widgetConfig})">settings</i>
-        <i class="material-icons" ng-click="deleteConfirm = true">close</i>
+        <span>
+            <md-tooltip md-direction="top">Modifier les paramètres</md-tooltip>
+            <i class="material-icons" ng-click="modifyWidget({widgetId: widgetId, widgetConfig: widgetConfig})">settings</i>
+        </span>
+        <span>
+            <md-tooltip md-direction="top">Supprimer la visualisation</md-tooltip>
+            <i class="material-icons" ng-click="deleteConfirm = true">close</i>
+        </span>
     </div>
     <div ng-hide="deleteConfirm">
         <line-chart-widget ng-if="widgetConfig.type === 'LineChart'" latest-entry="latestEntry" widget-config="widgetConfig"></line-chart-widget>
         <map-chart-widget ng-if="widgetConfig.type === 'MapChart'" latest-entry="latestEntry" widget-config="widgetConfig" sensors="sensors" widget-id="1"></map-chart-widget>
     </div>
     <div class="close-confirm" ng-show="deleteConfirm" layout="column" layout-align="center stretch">
-        <h4 layout="row" layout-align="center">Are you sure you want to delete this widget ?</h4>
+        <h4 layout="row" layout-align="center">Êtes-vous sûr de vouloir supprimer cette visualisation ?</h4>
         <div layout="row" layout-align="space-around center">
             <md-button class="md-warn" ng-click="deleteConfirm = false">
-                Cancel
+                Annuler
             </md-button>
             <md-button class="md-raised md-primary" ng-click="deleteWidget({widgetId: widgetId})">
-                Delete
+                Supprimer
             </md-button>
         </div>
     </div>

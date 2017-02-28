@@ -7,7 +7,7 @@
             <div flex>
                 <div layout="row" layout-align="center center" class="serie-def">
                     <md-input-container flex="66">
-                        <label>Sensor</label>
+                        <label>Capteur</label>
                         <md-select ng-model="Line.series[serie].sensor">
                             <md-option ng-repeat="sensor in Line.sensors" ng-value="sensor">
                                 {{sensor["rdfs:label"]}}
@@ -15,7 +15,7 @@
                         </md-select>
                     </md-input-container>
                     <md-input-container flex>
-                        <label>Metric</label>
+                        <label>Métrique</label>
                         <md-select ng-model="Line.series[serie].metric">
                             <md-option ng-repeat="metric in Line.metrics" ng-value="metric">
                                 {{metric.name}}
@@ -26,7 +26,7 @@
                 <div layout="row" layout-align="center center" class="serie-params" ng-show="Line.openedSettings === serie">
                     <md-slider-container flex="66">
                         <span>
-                            <md-tooltip md-direction="top">Serie weight</md-tooltip>
+                            <md-tooltip md-direction="top">Épaisseur série</md-tooltip>
                             <i class="material-icons grey-icon">line_weight</i>
                         </span>
                         <md-slider flex min="1" max="9" ng-model="Line.series[serie].strokeWidth" aria-label="Serie Weight slider">
@@ -37,7 +37,7 @@
                     </md-slider-container>
                     <div flex layout="row" layout-align="space-around center">
                         <span>
-                            <md-tooltip md-direction="top">Serie style</md-tooltip>
+                            <md-tooltip md-direction="top">Style série</md-tooltip>
                             <i class="material-icons grey-icon">line_style</i>
                         </span>
                         <md-button ng-click="Line.series[serie].lineType = 'full'" ng-class="{'md-primary':Line.series[serie].lineType === 'full'}" class="md-fab md-mini md-raised" layout="row" layout-align="center">

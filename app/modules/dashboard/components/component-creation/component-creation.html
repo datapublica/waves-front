@@ -11,7 +11,7 @@
     <div ng-if="Component.initStep === 2" layout="column" layout-align="center stretch" flex>
         <div layout="row" layout-align="center center" flex>
             <md-input-container flex="50">
-                <label>Choose a stream</label>
+                <label>Choisissez un flux</label>
                 <md-select ng-model="Component.componentStream">
                     <md-option ng-repeat="stream in Component.streams" ng-value="stream">
                         {{stream.label}}
@@ -20,8 +20,8 @@
             </md-input-container>
         </div>
         <div layout="row" layout-align="end">
-            <md-button class="md-warn" ng-click="Component.cancel()">Cancel</md-button>
-            <md-button class="md-primary" ng-disabled="!Component.componentStream.id" ng-click="Component.selectStream()">Next</md-button>
+            <md-button class="md-warn" ng-click="Component.cancel()">Annuler</md-button>
+            <md-button class="md-primary" ng-disabled="!Component.componentStream.id" ng-click="Component.selectStream()">Suivant</md-button>
         </div>
     </div>
     <div ng-if="Component.initStep === 3" flex ng-switch="Component.componentType">
@@ -31,13 +31,13 @@
     <div ng-if="Component.initStep === 4" layout="column" layout-align="center stretch" flex>
         <div layout="row" layout-align="center center" flex>
             <md-input-container flex="50">
-                <label>Widget Name</label>
+                <label>Nom de la visualisation</label>
                 <input type="text" ng-model="Component.componentName">
             </md-input-container>
         </div>
         <div layout="row" layout-align="end">
-            <md-button class="md-warn" ng-click="Component.cancel()">Cancel</md-button>
-            <md-button class="md-primary" ng-disabled="!Component.componentName" ng-click="Component.displayWidget()">Display</md-button>
+            <md-button class="md-warn" ng-click="Component.cancel()">Annuler</md-button>
+            <md-button class="md-primary" ng-disabled="!Component.componentName" ng-click="Component.displayWidget()">Afficher</md-button>
         </div>
     </div>
 </div>
