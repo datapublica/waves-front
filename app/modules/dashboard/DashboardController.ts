@@ -9,6 +9,7 @@ export class DashboardController {
     latestEntry: any;
     streams: any;
     color: any;
+    deleteWidget: Function;
     constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, data, context) {
         "ngInject";
         let ctrl = this;
@@ -23,6 +24,7 @@ export class DashboardController {
         
         ctrl.activeWidget = (widgetId: number, widgetConfig: Visualisation<any>) => {
             ctrl['widget'+widgetId+'Active'] = true;
+            ctrl['widget'+(widgetId+1)+'Display'] = true;
             ctrl['widget'+widgetId+'Config'] = angular.copy(widgetConfig);
 
             // listening to the data
@@ -41,5 +43,10 @@ export class DashboardController {
                 ctrl.streams[key].stop();
             }
         });
+        
+        ctrl.deleteWidget = (widgetId: number) => {
+            ctrl['widget'+widgetId+'Active'] = false;
+            ctrl['widget'+widgetId+'Config'] = null;
+        }
     }
 }

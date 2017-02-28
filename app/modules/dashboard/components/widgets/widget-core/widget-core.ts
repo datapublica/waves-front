@@ -5,6 +5,7 @@ import {Visualisation} from "../../../../../model/Visualisation";
 
 interface WidgetCoreScope extends ng.IScope
 {
+    deleteWidget: Function;
     widgetConfig: Visualisation<any>;
     widgetName: string;
 }
@@ -24,7 +25,8 @@ export class WidgetCore implements ng.IDirective {
             widgetConfig: '=',
             latestEntry: '=',
             sensors: '=',
-            widgetId: '='
+            widgetId: '=',
+            deleteWidget: '&'
         };
         
         this.template = <string>require('./widget-core.html');

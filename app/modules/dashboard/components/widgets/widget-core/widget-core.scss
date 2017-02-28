@@ -2,10 +2,16 @@ widget-core {
   .widget-container {
     height: 330px;
 
-    .widget-name {
+    .widget-header {
       color: white;
       background-color: #ED6A5A;
       padding: 15px;
+      i {
+        margin-left: 10px;
+      }
+    }
+    .close-confirm {
+      height: calc(100% - 54px);
     }
   }
 }

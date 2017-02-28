@@ -9,7 +9,15 @@ html {
     background-color: transparent;
     cursor: default;
   }
-  i.material-icons.grey-icon {
-    color: grey;
+  i.material-icons {
+    &:focus {
+      outline: 0;
+    }
+    &.grey-icon {
+      color: grey;
+    }
+  }
+  [ng-click] {
+    cursor: pointer;
   }
 }

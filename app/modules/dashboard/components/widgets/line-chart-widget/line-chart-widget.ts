@@ -34,7 +34,7 @@ export class LineChartWidget implements ng.IDirective {
                 now: any = new Date(Date.now() - duration);
     
             let series = {};
-            let height = 250;
+            let height = 240;
     
             let yScales = {};
             
