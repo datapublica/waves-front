@@ -1,11 +1,38 @@
 line-chart-component {
+  display: block;
+  height: 100%;
+  > div {
+    height: 100%;
+  }
   .serie-row {
     margin-top: 15px;
     md-input-container {
       margin: 0;
     }
+    color-picker {
+      margin: 0 10px;
+    }
+    .settings-icon {
+      cursor: pointer;
+      &:focus {
+        outline: 0;
+      }
+      i {
+        margin: 0 15px;
+      }
+    }
     .serie-def {
       margin-bottom: 5px;
+    }
+    .serie-params {
+      height: 52px;
+      overflow: hidden;
+      &.ng-hide {
+        height: 0;
+      }
+      &.ng-hide-add, &.ng-hide-remove {
+        transition: height ease-in 0.2s;
+      }
     }
   }
 }

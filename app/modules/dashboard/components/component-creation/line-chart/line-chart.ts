@@ -28,11 +28,15 @@ export class LineChartComponent implements ng.IComponentOptions {
     
         ctrl.metrics = SectorService.getUnits();
         
+        ctrl.toggleSettings = (serie) => {
+            ctrl.openedSettings = ctrl.openedSettings === serie ? null : serie;
+        };
+        
         // series with default colors
-        ctrl.series = <Serie[]>[
-            {strokeWidth: 1, color: {hex:'#5BC0EB'}, lineType: 'full'},
-            {strokeWidth: 1, color: {hex:'#9BC53D'}, lineType: 'full'},
-            {strokeWidth: 1, color: {hex:'#E55934'}, lineType: 'full'}
+        ctrl.series = <Serie[]> [
+            {strokeWidth: 2, color: {hex:'#5BC0EB'}, lineType: 'full'},
+            {strokeWidth: 2, color: {hex:'#9BC53D'}, lineType: 'full'},
+            {strokeWidth: 2, color: {hex:'#E55934'}, lineType: 'full'}
         ];
         
         ctrl.selectSeries = () => {

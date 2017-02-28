@@ -39,6 +39,7 @@ module app {
         .module('app', [
             "ui.router",
             "ngMaterial",
+            "ngAnimate",
             "app.components",
             "app.services",
             "app.main",
