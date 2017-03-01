@@ -17,8 +17,6 @@ export class LineChartWidget implements ng.IDirective {
     public link: any;
     public template: any;
     
-    private $scope;
-    
     constructor($filter: ng.IFilterService, SectorService: SectorService) {
         
         this.scope = {
@@ -30,8 +28,8 @@ export class LineChartWidget implements ng.IDirective {
         this.link = ($scope: LineChartWidgetScope, element): void => {
             
             let limit: number = 60,
-                duration:number = 500,
-                now: any = new Date(Date.now() - duration);
+                duration:number = 1000,
+                now: any = Date.now() - duration;
     
             let series = {};
             let height = 240;
@@ -45,8 +43,11 @@ export class LineChartWidget implements ng.IDirective {
                     color: s.color.hex,
                     lineType: s.lineType,
                     strokeWidth: s.strokeWidth,
-                    data: d3.range(60).map(function() {
-                        return 0
+                    data: d3.range(60).map(function(d, i) {
+                        return {
+                            timestamp: now - (limit - i) * duration,
+                            val:0
+                        }
                     })
                 };
                 
@@ -58,8 +59,8 @@ export class LineChartWidget implements ng.IDirective {
             $scope.$watch('latestEntry', (n) => {
                 
                 if(!n) return;
-                
-                tick(n);
+    
+                addNewEntry(n);
             });
             
             
@@ -75,14 +76,14 @@ export class LineChartWidget implements ng.IDirective {
     
             let x:any = d3.time.scale()
             .domain([now - (limit - 2), now - duration])
-            .range([0, width]);
+            .range([0, width+30]);
     
             let line:any = d3.svg.line()
-            .x(function(d, i) {
-                return x(now - (limit - 1 - i) * duration);
+            .x((d: any) => {
+                return x(d.timestamp);
             })
-            .y(function(d) {
-                return yScales[currentSerie.sensor + ' ' + currentSerie.metric](d);
+            .y((d: any) => {
+                return yScales[currentSerie.sensor + ' ' + currentSerie.metric](d.val);
             });
             
             let svg = graphContainer.select('.graph-container').append('svg')
@@ -105,7 +106,6 @@ export class LineChartWidget implements ng.IDirective {
             let dy = 0;
             for (let name in series) {
                 let serie = series[name];
-                
                 serie.path = paths.append('path')
                 .data([serie.data])
                 .attr('class', name + ' serie ' + serie.lineType)
@@ -129,59 +129,73 @@ export class LineChartWidget implements ng.IDirective {
         
                 dy += 20;
             }
+            
+            function addNewEntry(newEntry) {
+                now = Date.now();
     
-            function tick(newEntry) {
-                now = new Date();
-                
                 let min, max;
-        
+    
                 // Add new values
                 for (let name in series) {
                     let serie = series[name];
-                    serie.shiftMe = false;
                     if(serie.sensor === newEntry.sensor && serie.metric === newEntry.unit) {
-                        serie.data.push(parseFloat(newEntry.newValue));
-                        serie.shiftMe = true;
-    
+                        serie.data.push(
+                            {
+                                timestamp: now,
+                                val:parseFloat(newEntry.newValue)
+                            }
+                        );
+
                         lastValueLabels[serie.sensor + ' ' + serie.metric].text(SectorService.extractAfterSharp(serie.sensor) + ' ' + $filter('number')(newEntry.newValue, 2) + ' ' + SectorService.getUnitLabel(serie.metric));
+
+                        min = Math.min(...serie.data.map(d => d.val));
+                        max = Math.max(...serie.data.map(d => d.val));
+                        if(min === max){
+                            min = min-10;
+                            max = max+10;
+                        }
+
+                        // update the specific y domain
+                        yScales[serie.sensor + ' ' + serie.metric].domain([min, max]);
                     }
-                    min = Math.min(...serie.data);
-                    max = Math.max(...serie.data);
-                    if(min === max){
-                        min = min-10;
-                        max = max+10;
-                    }
-                    currentSerie = serie;
-                    serie.path.attr('d', line);
-    
-                    // update the specific y domain
-                    yScales[serie.sensor + ' ' + serie.metric].domain([min, max]);
                 }
-        
+            }
+    
+            function tickChart() {
+                now = Date.now();
+    
                 // Shift domain
                 x.domain([now - (limit - 2) * duration, now - duration]);
-        
+    
                 // Slide x-axis left
                 axis.transition()
                 .duration(duration)
                 .ease('linear')
                 .call(x.axis);
-        
+    
                 // Slide paths left
                 paths.attr('transform', null)
                 .transition()
                 .duration(duration)
                 .ease('linear')
-                .attr('transform', 'translate(' + x(now - (limit - 1) * duration) + ')');
-        
-                // Remove oldest data point from each serie
-                for (let name in series) {
-                    let serie = series[name];
-                    if(serie.shiftMe){
-                        serie.data.shift()
+                .attr('transform', 'translate(' + x(now - (limit - 1) * duration) + ')')
+                .each('end', () => {
+    
+                    // Remove oldest data points from each serie
+                    for (let name in series) {
+                        let serie = series[name];
+                        currentSerie = serie;
+                        serie.path.attr('d', line);
+                        let i = 0;
+                        while(i < serie.data.length && serie.data[i].timestamp < (now - limit * duration)) {i++;}
+                        if(i > 0){
+                            serie.data.splice(0,i);
+                        }
                     }
-                }
+                    tickChart();
+                });
             }
+            tickChart();
         }
     }
 }

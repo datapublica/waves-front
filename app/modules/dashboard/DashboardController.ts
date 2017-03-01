@@ -67,11 +67,11 @@ export class DashboardController {
         
         ctrl.deleteWidget = (widgetId: number) => {
             ctrl['widget'+widgetId+'Active'] = false;
-            ctrl['widget'+widgetId+'Config'] = null;
+            ctrl['widget'+widgetId+'Config'] = undefined;
             StorageService.removeWidgetConfig(widgetId);
         };
     
-        ctrl.modifyWidget = (widgetId: number, widgetConfig: Visualisation<any>) => {
+        ctrl.modifyWidget = (widgetId: number) => {
             ctrl['widget'+widgetId+'Active'] = false;
         };
     }
