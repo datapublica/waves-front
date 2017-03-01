@@ -9,6 +9,7 @@
                     <md-input-container flex="66">
                         <label>Capteur</label>
                         <md-select ng-model="Line.series[serie].sensor">
+                            <md-option></md-option>
                             <md-option ng-repeat="sensor in Line.sensors" ng-value="sensor">
                                 {{sensor["rdfs:label"]}}
                             </md-option>
@@ -17,6 +18,7 @@
                     <md-input-container flex>
                         <label>Métrique</label>
                         <md-select ng-model="Line.series[serie].metric">
+                            <md-option></md-option>
                             <md-option ng-repeat="metric in Line.metrics" ng-value="metric">
                                 {{metric.name}}
                             </md-option>
@@ -57,6 +59,6 @@
 
     <div layout="row" layout-align="end">
         <md-button class="md-warn" ng-click="Line.cancel()">Cancel</md-button>
-        <md-button class="md-primary" ng-disabled="!Line.series[0] && !Line.series[1] && !Line.series[2]" ng-click="Line.selectSeries()">Next</md-button>
+        <md-button class="md-primary" ng-disabled="!((Line.series[0].sensor && Line.series[0].metric) || (Line.series[1].sensor && Line.series[1].metric) || (Line.series[2].sensor && Line.series[2].metric))" ng-click="Line.selectSeries()">Next</md-button>
     </div>
 </div>
