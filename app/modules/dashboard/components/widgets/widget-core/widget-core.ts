@@ -23,7 +23,7 @@ export class WidgetCore implements ng.IDirective {
             widgetConfig: '=',
             latestEntry: '=',
             sensors: '=',
-            widgetId: '=',
+            widgetId: '@',
             modifyWidget: '&',
             deleteWidget: '&'
         };

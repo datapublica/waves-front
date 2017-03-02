@@ -63,10 +63,10 @@ export class CreationComponent implements ng.IComponentOptions {
                 ctrl.displayWidget();
             } else {
                 // returning to step 0
-                ctrl.componentType = null;
-                ctrl.componentStream = null;
-                ctrl.chartConfig = null;
-                ctrl.componentName = null;
+                ctrl.componentType = undefined;
+                ctrl.componentStream = undefined;
+                ctrl.chartConfig = undefined;
+                ctrl.componentName = undefined;
                 ctrl.initStep = 0;
             }
         };

@@ -14,7 +14,7 @@
     </div>
     <div ng-hide="deleteConfirm">
         <line-chart-widget ng-if="widgetConfig.type === 'LineChart'" latest-entry="latestEntry" widget-config="widgetConfig"></line-chart-widget>
-        <map-chart-widget ng-if="widgetConfig.type === 'MapChart'" latest-entry="latestEntry" widget-config="widgetConfig" sensors="sensors" widget-id="1"></map-chart-widget>
+        <map-chart-widget ng-if="widgetConfig.type === 'MapChart'" latest-entry="latestEntry" widget-config="widgetConfig" sensors="sensors" widget-id="widgetId"></map-chart-widget>
     </div>
     <div class="close-confirm" ng-show="deleteConfirm" layout="column" layout-align="center stretch">
         <h4 layout="row" layout-align="center">Êtes-vous sûr de vouloir supprimer cette visualisation ?</h4>

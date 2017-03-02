@@ -4,5 +4,5 @@ import {WidgetCore} from "./widget-core/widget-core";
 
 angular.module('app.dashboard.components.widgets', [])
 .directive('widgetCore', <any>WidgetCore)
-.directive('mapChartWidget', <any>MapChartWidget)
+.component('mapChartWidget', new MapChartWidget())
 .directive('lineChartWidget', <any>LineChartWidget);

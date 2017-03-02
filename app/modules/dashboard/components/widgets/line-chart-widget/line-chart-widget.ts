@@ -96,7 +96,8 @@ export class LineChartWidget implements ng.IDirective {
             .attr('transform', 'translate(0,' + height + ')')
             .call(x.axis = d3.svg.axis().scale(x).orient('bottom'));
     
-            let paths = svg.append('g');
+            let pathsContainer = svg.append('g');
+            let paths = {};
             
             let lastValueLabelsContainer = svg.insert('g', ':first-child')
                 .attr("class", "last-values")
@@ -106,7 +107,8 @@ export class LineChartWidget implements ng.IDirective {
             let dy = 0;
             for (let name in series) {
                 let serie = series[name];
-                serie.path = paths.append('path')
+                paths[serie.sensor + ' ' + serie.metric] = pathsContainer.append('g');
+                serie.path = paths[serie.sensor + ' ' + serie.metric].append('path')
                 .data([serie.data])
                 .attr('class', name + ' serie ' + serie.lineType)
                 .style('stroke', serie.color)
@@ -150,13 +152,10 @@ export class LineChartWidget implements ng.IDirective {
 
                         min = Math.min(...serie.data.map(d => d.val));
                         max = Math.max(...serie.data.map(d => d.val));
-                        if(min === max){
-                            min = min-10;
-                            max = max+10;
-                        }
 
                         // update the specific y domain
-                        yScales[serie.sensor + ' ' + serie.metric].domain([min, max]);
+                        serie.min = min;
+                        serie.max = max;
                     }
                 }
             }
@@ -174,7 +173,7 @@ export class LineChartWidget implements ng.IDirective {
                 .call(x.axis);
     
                 // Slide paths left
-                paths.attr('transform', null)
+                pathsContainer.attr('transform', null)
                 .transition()
                 .duration(duration)
                 .ease('linear')
@@ -185,6 +184,8 @@ export class LineChartWidget implements ng.IDirective {
                     for (let name in series) {
                         let serie = series[name];
                         currentSerie = serie;
+                        yScales[serie.sensor + ' ' + serie.metric].domain([serie.min || 0, serie.max || 100]);
+                        
                         serie.path.attr('d', line);
                         let i = 0;
                         while(i < serie.data.length && serie.data[i].timestamp < (now - limit * duration)) {i++;}
