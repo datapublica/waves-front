@@ -1,28 +1,28 @@
 <div class="dashboard-container">
     <div layout="row" layout-padding layout-wrap>
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100">
-            <component-creation widget-config="Dashboard.widget1Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget1Active" component-id="1" on-active="Dashboard.activeWidget(id, config)"></component-creation>
+            <component-creation available-streams="Dashboard.availableStreams" widget-config="Dashboard.widget1Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget1Active" component-id="1" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget1Active">
                 <widget-core widget-id="1" latest-entry="Dashboard.latestEntry[Dashboard.widget1Config.stream.id]" widget-config="Dashboard.widget1Config" sensors="Dashboard.sensors" modify-widget="Dashboard.modifyWidget(widgetId, widgetConfig)" delete-widget="Dashboard.deleteWidget(widgetId)"></widget-core>
             </div>
         </div>
 
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100" ng-class="{disabled: !Dashboard.widget2Display}">
-            <component-creation widget-config="Dashboard.widget2Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget2Active" component-id="2" on-active="Dashboard.activeWidget(id, config)"></component-creation>
+            <component-creation available-streams="Dashboard.availableStreams" widget-config="Dashboard.widget2Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget2Active" component-id="2" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget2Active">
                 <widget-core widget-id="2" latest-entry="Dashboard.latestEntry[Dashboard.widget2Config.stream.id]" widget-config="Dashboard.widget2Config" sensors="Dashboard.sensors" modify-widget="Dashboard.modifyWidget(widgetId, widgetConfig)" delete-widget="Dashboard.deleteWidget(widgetId)"></widget-core>
             </div>
         </div>
 
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100" ng-if="Dashboard.widget2Display" ng-class="{disabled: !Dashboard.widget3Display}">
-            <component-creation widget-config="Dashboard.widget3Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget3Active" component-id="3" on-active="Dashboard.activeWidget(id, config)"></component-creation>
+            <component-creation availableStreams="Dashboard.availableStreams" widget-config="Dashboard.widget3Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget3Active" component-id="3" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget3Active">
                 <widget-core widget-id="3" latest-entry="Dashboard.latestEntry[Dashboard.widget3Config.stream.id]" widget-config="Dashboard.widget3Config" sensors="Dashboard.sensors" modify-widget="Dashboard.modifyWidget(widgetId, widgetConfig)" delete-widget="Dashboard.deleteWidget(widgetId)"></widget-core>
             </div>
         </div>
 
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100" ng-if="Dashboard.widget3Display" ng-class="{disabled: !Dashboard.widget4Display}">
-            <component-creation widget-config="Dashboard.widget4Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget4Active" component-id="4" on-active="Dashboard.activeWidget(id, config)"></component-creation>
+            <component-creation available-streams="Dashboard.availableStreams" widget-config="Dashboard.widget4Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget4Active" component-id="4" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget4Active">
                 <widget-core widget-id="4" latest-entry="Dashboard.latestEntry[Dashboard.widget4Config.stream.id]" widget-config="Dashboard.widget4Config" sensors="Dashboard.sensors" modify-widget="Dashboard.modifyWidget(widgetId, widgetConfig)" delete-widget="Dashboard.deleteWidget(widgetId)"></widget-core>
             </div>

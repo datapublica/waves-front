@@ -2,6 +2,7 @@ import {Visualisation} from "../../model/Visualisation";
 import {SectorService} from "../../services/SectorService";
 import {StreamingService} from "../../services/StreamingService";
 import {StorageService} from "../../services/StorageService";
+import {DataStream} from "../main/MainRouting";
 
 
 export class DashboardController {
@@ -12,11 +13,13 @@ export class DashboardController {
     color: any;
     deleteWidget: Function;
     modifyWidget: Function;
-    constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, StorageService:StorageService, data, context, widgetsLocalStorage) {
+    availableStreams: DataStream[];
+    constructor($scope: ng.IScope, SectorService: SectorService, StreamingService: StreamingService, StorageService:StorageService, data, context, widgetsLocalStorage, streams: DataStream[]) {
         "ngInject";
         let ctrl = this;
         
         ctrl.streams = {};
+        ctrl.availableStreams = streams;
         ctrl.sensors = context.data['@graph'] && context.data['@graph'].filter(s => s['@type'] === 'http://purl.oclc.org/NET/ssnx/ssn#Sensor') || [];
         
         ctrl.color = {};

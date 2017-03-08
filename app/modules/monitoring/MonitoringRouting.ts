@@ -17,9 +17,6 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
         controller: 'MonitoringController',
         controllerAs: 'Monitoring',
         resolve: {
-            graph: (MonitoringService: MonitoringService) => {
-                return MonitoringService.getNetworkGraphMock();
-            },
             metricUnits: (MonitoringService: MonitoringService) => {
                 return MonitoringService.getMetricsUnits();
             }

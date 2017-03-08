@@ -20,6 +20,7 @@ export class CreationComponent implements ng.IComponentOptions {
     public bindings:Object = {
         sensors: '=',
         componentId: '=',
+        availableStreams: '=',
         widgetConfig: '=',
         onActive: '&'
     };
@@ -30,7 +31,7 @@ export class CreationComponent implements ng.IComponentOptions {
         let ctrl = $scope.Component;
     
         let types: FullType[] = VisualisationType.getTypes();
-        let streams: Stream[] = [ new Stream('Waves:Stream', "SI-I", 54)];
+        let streams: Stream[] = ctrl.availableStreams;
         
         let mapExistingFields = () => {
             ctrl.componentType = angular.copy(ctrl.widgetConfig.type);

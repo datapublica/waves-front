@@ -31,8 +31,7 @@ var lineFunction = (points: number[], update?: boolean) => lineInterpolation(pat
 
 // Directive stylesheet
 import './network.scss';
-import {Filter} from "../../MonitoringController";
-import {DataStream} from "../../MonitoringController";
+import {Filter, DataStream} from "../../../main/MainRouting";
 import Line = d3.svg.Line;
 import {MonitoringService} from "../../../../services/MonitoringService";
 
@@ -62,7 +61,6 @@ export class NetworkDirective implements ng.IDirective {
         this.scope = {
             streams: '=',
             filters: '=',
-            networkStatus: '=',
             metricUnits: '=',
             metricSelection: '='
         };
