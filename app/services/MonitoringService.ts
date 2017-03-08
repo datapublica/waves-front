@@ -40,7 +40,7 @@ export class MonitoringService {
         this.log = $log;
     }
 
-    public getNetworkStatus(nodes: Array): any {
+    public getNetworkStatus(nodes: string[]): any {
         nodes.forEach(uri => {
             if (angular.isUndefined(origData[uri])) {
                 origData[uri] = {};
