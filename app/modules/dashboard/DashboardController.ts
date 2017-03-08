@@ -20,6 +20,7 @@ export class DashboardController {
         ctrl.sensors = context.data['@graph'] && context.data['@graph'].filter(s => s['@type'] === 'http://purl.oclc.org/NET/ssnx/ssn#Sensor') || [];
         
         ctrl.color = {};
+        ctrl.latestEntry = {};
         
         let unitDic = {};
         ctrl.sensors.forEach((sensor) => {unitDic[sensor['@id']] = sensor['http://data.nasa.gov/qudt/owl/qudt#unit']['@id']});
@@ -38,7 +39,7 @@ export class DashboardController {
                     let newValue = parseData['@graph'].filter(g => g['@type'] === "ssn:ObservationValue")[0]['qudt:numericValue']['@value'];
                     let unit = unitDic[sensor] && SectorService.extractAfterSharp(unitDic[sensor]);
                     // console.log({sensor, newValue, unit});
-                    ctrl.latestEntry = {sensor, newValue, unit};
+                    ctrl.latestEntry[widgetConfig.stream.id] = {sensor, newValue, unit};
                 });
             }
         };
