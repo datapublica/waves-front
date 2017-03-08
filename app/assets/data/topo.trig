@@ -4,9 +4,9 @@
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix waves:  <http://www.waves-rsp.org/configuration#> .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
-@base <http://localhost:8181/waves/versailles/> .
+@base <http://localhost:8080/waves/versailles/> .
 
-<http://localhost:8181/waves/first-tests> {
+<http://localhost:8080/waves/first-tests> {
 
   <installation>
 	rdf:type        	waves:Installation ;
@@ -16,6 +16,8 @@
 	# Note: This property is required when using Storm Kafka spout that
 	#       discovers Kafka servers through their ZooKeeper registration.
 	waves:zookeeperHosts	"localhost:2181"^^xsd:string ;
+
+	waves:sparqlEndpoint	"http://localhost:8181/openrdf-sesame/repositories/wavesRepo"^^xsd:string ;
 
 	# Global Redis database
 	waves:redisHost	"localhost:6379" ;
@@ -51,37 +53,8 @@
     PREFIX cuahsi:<http://his.cuahsi.org/ontology/cuahsi#>
 
     CONSTRUCT {
-    			 ?eventId waves:time ?time .
-    			 ?eventId a waves:Event .
-                 ?eventId waves:observes  _:o .
-                 _:o waves:relatedSector ?sector .
-                 _:o qudt:numericValue ?totalSum }
-    WHERE {
-    	SELECT DISTINCT ?sector ((?inputSum-?outputSum) as ?totalSum) ?time
-    	WHERE {
-    	        {
-      				SELECT DISTINCT ?sector  (SUM(?inputValue) AS ?inputSum) (SUM(?outputValue) AS ?outputSum) ?time
-    				WHERE {
-             				 ?inputSensor ssn:onPlatform ?sector .
-             				 ?inputSensor ssn:observes ?inputFlow .
-             				 ?inputFlow cuahsi:relatedTo ?sector .
-        	                 ?inputFlow a cuahsi:inputFlow .
-             				 ?inputEvent ssn:isProducedBy ?inputSensor .
-             				 ?inputEvent ssn:hasValue ?inputObservationValue .
-             				 ?inputEvent ssn:startTime ?time .
-             				 ?inputObservationValue qudt:numericValue ?inputValue .
-             				 OPTIONAL {
-             				 		?outputSensor ssn:onPlatform ?sector .
-             				 		?outputSensor ssn:observes ?outputFlow .
-             				        ?outputFlow cuahsi:relatedTo ?sector .
-        	                        ?outputFlow a cuahsi:outputFlow .
-             				        ?outputEvent ssn:isProducedBy ?outputSensor .
-             				        ?outputEvent ssn:hasValue ?outputObservationValue .
-             				        ?outputObservationValue qudt:numericValue ?outputValue .
-             				        }
-    		      	       } GROUP BY ?sector ?time
-        		}
-    		}
+			 ?s ?p ?o }
+WHERE {  ?s ?p ?o
     	}
         		""" .
 
@@ -130,9 +103,24 @@
 
   <converter/1i>
   	rdf:type			waves:Converter ;
-	waves:model			"@prefix ssn:<http://purl.oclc.org/NET/ssnx/ssn#> . @prefix qudt:<http://data.nasa.gov/qudt/owl/qudt#> . @prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> . <http://rsp.waves.org/event/native/key/x?type=eventId>  rdf:type ssn:SensorOutput ; ssn:isProducedBy <http://rsp.waves.org/event/native/key/id?type=uri>;ssn:hasValue <http://rsp.waves.org/event/native/key/x?type=ObservationId&prefix=waves>; ssn:startTime <http://rsp.waves.org/event/native/key/timestamp?type=timestamp> . <http://rsp.waves.org/event/native/key/x?type=ObservationId&prefix=waves> a ssn:ObservationValue ;qudt:numericValue <http://rsp.waves.org/event/native/key/value?type=double&unit=unit&scale=scale> ; qudt:unit <http://rsp.waves.org/event/native/key/unit> ." ;
+	waves:model			"@prefix ssn:<http://purl.oclc.org/NET/ssnx/ssn#> .
+	                     @prefix qudt:<http://data.nasa.gov/qudt/owl/qudt#> .
+						 @prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+						 $eventId
+        					a ssn:SensorOutput ;
+        					ssn:isProducedBy $uri(?id) ;
+                            ssn:hasValue $bnode(?obsId) ;
+        					ssn:startTime $timestamp .
+    					 $bnode(?obsId)
+        					a ssn:ObservationValue ;
+        					qudt:numericValue $double(?value, ?unit, ?scale) ;
+        					qudt:unit $value(?unit) ." ;
 	waves:unit			<unit/1i> ;
-	waves:query			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#> prefix ssn:<http://purl.oclc.org/NET/ssnx/ssn#> prefix qudt:<http://data.nasa.gov/qudt/owl/qudt#> select * where { ?sensorUri rdf:type ssn:Sensor ; qudt:unit ?unit ; rdfs:label ?sensorName . }" ;
+	waves:query			"prefix rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+						 prefix rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+						 prefix ssn:<http://purl.oclc.org/NET/ssnx/ssn#>
+						 prefix qudt:<http://data.nasa.gov/qudt/owl/qudt#>
+						 select * where { ?sensorUri rdf:type ssn:Sensor ; qudt:unit ?unit ; rdfs:label ?sensorName . }" ;
 	waves:location		"http://localhost:8181/openrdf-sesame/repositories/wavesRepo";
 	rdfs:label      	"sampleMapper" .
 
@@ -143,6 +131,10 @@
 	waves:mappings		 "mH2O: 0.098067 http://www.xxx.com/units/bar, m3/h: http://www.xxx.com/units/m3ph" .
 
 
+  _:b1	rdf:type		waves:RdfStore ;
+	rdfs:label		"datalift-waves" ;
+	waves:location		"http://localhost:8181/openrdf-sesame/repositories/wavesRepo" ;
+	waves:storeType		"Sesame" .
 
 
 }

@@ -11,6 +11,9 @@ let MARKER_SIZE = 15;
 
 
 var pathFromData = function (points: number[], update?: boolean): any {
+    if (points.length == 0) {
+        return [[0, PLOT_HEIGHT/2], [PLOT_WIDTH, PLOT_HEIGHT/2]];
+    }
     let max = Math.max(points.reduce((a, b) => Math.max(a, b)), 10);
     return points.map((e, i) => [(PLOT_WIDTH * (update ? i + 1 : i) / points.length), (PLOT_HEIGHT - PLOT_HEIGHT * (e) / (max))]);
 };
@@ -31,6 +34,7 @@ import './network.scss';
 import {Filter} from "../../MonitoringController";
 import {DataStream} from "../../MonitoringController";
 import Line = d3.svg.Line;
+import {MonitoringService} from "../../../../services/MonitoringService";
 
 interface NetworkDirectiveScope extends ng.IScope {
     streams: DataStream[];
@@ -40,7 +44,7 @@ interface NetworkDirectiveScope extends ng.IScope {
     metricSelection: any;
 }
 
-@directive('$filter')
+@directive('$filter', 'MonitoringService', '$interval')
 export class NetworkDirective implements ng.IDirective {
 
     public scope: any;
@@ -53,7 +57,7 @@ export class NetworkDirective implements ng.IDirective {
 
     private numberFilter: ng.IFilterNumber;
 
-    constructor($filter: ng.IFilterService) {
+    constructor($filter: ng.IFilterService, MonitoringService: MonitoringService, $interval: ng.IIntervalService) {
         "ngInject";
         this.scope = {
             streams: '=',
@@ -68,15 +72,24 @@ export class NetworkDirective implements ng.IDirective {
         this.link = ($scope: NetworkDirectiveScope, element: HTMLElement[]): void => {
             this.$scope = $scope;
             this.element = element[0];
+            $scope.metricSelection = {};
+            let defaultMetric = "throughput";
 
             // Init and draw the default map
-            this.createGraph($scope.streams, $scope.filters);
-            this.createLayout($scope.networkStatus, $scope.metricSelection);
+            let nodes = this.createGraph($scope.streams, $scope.filters);
+
+            nodes.forEach(uri => $scope.metricSelection[uri] = defaultMetric);
+            $scope.networkStatus = MonitoringService.getNetworkStatus(nodes);
+
+            this.createLayout($scope.metricSelection);
+
+            let promise = $interval(() => $scope.networkStatus = MonitoringService.getNetworkStatus(nodes), 2000);
+            $scope.$on('$destroy', function() {
+                $interval.cancel(promise);
+            });
 
             $scope.$watch('networkStatus', (n, o) => {
-                if (n != o) {
-                    this.update($scope.networkStatus, $scope.metricSelection);
-                }
+                this.update($scope.networkStatus, $scope.metricSelection);
             });
             var init = 1;
             $scope.$watch('metricSelection', () => {
@@ -90,19 +103,22 @@ export class NetworkDirective implements ng.IDirective {
     }
 
     private createGraph(streams: DataStream[], filters: Filter[]) {
-        var gr = {
+        let nodes = [];
+        let gr = {
             "root": true,
             "children": [],
             "edges": []
         };
 
         streams.forEach(x => {
+            nodes.push(x.uri);
             gr.children.push({
                 "id": x.uri,
                 "data": x,
                 "label": x.label
             });
             if (x.converter) {
+                nodes.push(x.converter.uri);
                 gr.children.push({
                     "id": x.converter.uri,
                     "data": x.converter,
@@ -117,6 +133,7 @@ export class NetworkDirective implements ng.IDirective {
         });
         filters.forEach(x => {
             let groupId = "group:" + x.uri;
+            nodes.push(x.uri);
             var r: any = {
                 "id": groupId,
                 "children": [{
@@ -151,6 +168,7 @@ export class NetworkDirective implements ng.IDirective {
             });
 
             if (x.staticFeed) {
+                nodes.push(x.staticFeed.uri);
                 r.children.push({
                     "id": x.staticFeed.uri,
                     "data": x.staticFeed,
@@ -167,6 +185,7 @@ export class NetworkDirective implements ng.IDirective {
             x.consumesStreams.forEach(win => {
                 let portConsume = "port:" + x.uri + ":" + win.uri;
 
+                nodes.push(win.uri);
                 r.children.push({
                     "id": win.uri,
                     "data": win,
@@ -214,9 +233,10 @@ export class NetworkDirective implements ng.IDirective {
             }
         });
         this.graph = gr;
+        return nodes;
     }
 
-    private createLayout(networkStatus: any, selectedMetric: any) {
+    private createLayout(selectedMetric: any) {
         var self = this;
         var zoom = d3.behavior.zoom()
             .on("zoom", () => {
@@ -349,7 +369,7 @@ export class NetworkDirective implements ng.IDirective {
             function createMetricAgg(agg: string, i: number) {
                 baseNodes.append("text")
                     .text(function (d: any) {
-                        return self.numberFilter(networkStatus[d.id][selectedMetric[d.id]].aggregates[agg], 1) + " " + self.$scope.metricUnits[selectedMetric[d.id]];
+                        return 0 + " " + self.$scope.metricUnits[selectedMetric[d.id]];
                     })
                     .attr("class", "monitoring-metric-"+(agg.replace("%", "")))
                     .attr("font-size", FONT_SIZE-1)
@@ -381,7 +401,7 @@ export class NetworkDirective implements ng.IDirective {
                 .attr("stroke", "red")
                 .attr("stroke-width", "1px")
                 .attr("fill", "none")
-                .attr("d", (d: any) => lineFunction(networkStatus[d.id][selectedMetric[d.id]].latestPoints, false));
+                .attr("d", (d: any) => lineFunction([], false));
 
             node.filter(x => x.children)
                 .append("rect")
