@@ -15,7 +15,7 @@
         </div>
 
         <div class="widget-wrapper" flex-gt-sm="50" flex-sm="100" ng-if="Dashboard.widget2Display" ng-class="{disabled: !Dashboard.widget3Display}">
-            <component-creation availableStreams="Dashboard.availableStreams" widget-config="Dashboard.widget3Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget3Active" component-id="3" on-active="Dashboard.activeWidget(id, config)"></component-creation>
+            <component-creation available-streams="Dashboard.availableStreams" widget-config="Dashboard.widget3Config" sensors="Dashboard.sensors" ng-if="!Dashboard.widget3Active" component-id="3" on-active="Dashboard.activeWidget(id, config)"></component-creation>
             <div ng-if="Dashboard.widget3Active">
                 <widget-core widget-id="3" latest-entry="Dashboard.latestEntry[Dashboard.widget3Config.stream.id]" widget-config="Dashboard.widget3Config" sensors="Dashboard.sensors" modify-widget="Dashboard.modifyWidget(widgetId, widgetConfig)" delete-widget="Dashboard.deleteWidget(widgetId)"></widget-core>
             </div>
