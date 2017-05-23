@@ -60,7 +60,9 @@
     "start": "npm install && node_modules/.bin/typings install && npm run-script && cd node_modules/webpack-dev-server && npm run-script prepublish && cd ../.. && npm run-script dev",
     "dev": "node node_modules/.bin/webpack-dev-server --content-base app --host 0.0.0.0",
     "build": "rm -rf dist/ && NODE_ENV=production node node_modules/.bin/webpack && cp app/index.html dist/index.html",
-    "dist": "rm -rf dist/ && NODE_ENV=production node node_modules/.bin/webpack && cp app/index.html dist/index.html && NODE_ENV=production  node node_modules/.bin/webpack-dev-server --content-base dist"
+    "dist": "rm -rf dist/ && NODE_ENV=production node node_modules/.bin/webpack && cp app/index.html dist/index.html && NODE_ENV=production  node node_modules/.bin/webpack-dev-server --content-base dist",
+    "build-docker": "npm run build && npm run docker",
+    "docker": "cp $JAR_FILE dist/app.jar && docker build ${DOCKER_OPT: } -f .docker/Dockerfile --build-arg JAR_FILE=dist/app.jar ."
   },
   "author": "",
   "license": "ISC"
