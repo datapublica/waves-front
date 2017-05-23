@@ -16,7 +16,7 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
         controllerAs: 'Dashboard',
         resolve: {
             context : function (SectorService: SectorService) {
-                return SectorService.getS1iContextMock();
+                return SectorService.getS1iContext();
             },
             data: (SectorService: SectorService) => {
                 return SectorService.getS1iDataMock();

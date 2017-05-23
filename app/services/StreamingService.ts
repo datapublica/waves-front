@@ -14,6 +14,9 @@ export class StreamingService {
     }
 
     public streamData(streamId: number, callback):any {
+        if (!ON_PROD) {
+            return this.mockData(streamId, callback);
+        }
         var baseApi = location.href.replace(/^http/, 'ws').replace(/[^/]*$/, '');
         let client = new WebSocket(baseApi+'ws/'+streamId, 'echo-protocol');
 

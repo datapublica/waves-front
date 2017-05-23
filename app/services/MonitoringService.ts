@@ -58,8 +58,11 @@ export class MonitoringService {
     }
 
     public getNetworkGraph(): any {
+        if (!ON_PROD) {
+            return this.getNetworkGraphMock();
+        }
         let graph = new rdf.Graph();
-        return this.http.get("/api/config").then(data => {
+        return this.http.get("./api/config").then(data => {
             return N3Parser.process(data.data, (t) => graph.add(t))
         }).then(() => graph);
     }

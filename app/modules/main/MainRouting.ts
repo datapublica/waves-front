@@ -148,7 +148,7 @@ export function config($stateProvider: ng.ui.IStateProvider): void {
         controllerAs: 'Main',
         resolve: {
             graph: (MonitoringService: MonitoringService) => {
-                return MonitoringService.getNetworkGraphMock();
+                return MonitoringService.getNetworkGraph();
             },
             streams: (graph: Graph) => {
                 return graph.match(null, RDF_TYPE, URI_WAVES + "Stream").map(it => new DataStream(it.subject, new rdf.Graph(graph.match(it.subject, null, null)), graph, {}));

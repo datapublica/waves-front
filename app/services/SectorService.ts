@@ -14,6 +14,9 @@ export class SectorService {
     }
     
     public getS1iData() : any {
+        if (!ON_PROD) {
+            return this.getS1iDataMock();
+        }
         return this.http.get('./api/54');
     }
 
@@ -22,6 +25,9 @@ export class SectorService {
     }
 
     public getS1iContext() : any {
+        if (!ON_PROD) {
+            return this.getS1iContextMock();
+        }
         return this.http.get('./api/context');
     }
 
