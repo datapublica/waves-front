@@ -14,7 +14,8 @@ export class StreamingService {
     }
 
     public streamData(streamId: number, callback):any {
-        let client = new WebSocket('ws://localhost:3000/ws/'+streamId, 'echo-protocol');
+        var baseApi = location.href.replace(/^http/, 'ws').replace(/[^/]*$/, '');
+        let client = new WebSocket(baseApi+'ws/'+streamId, 'echo-protocol');
 
         var websocketActive = true;
 
